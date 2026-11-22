@@ -55,11 +55,12 @@ export async function runMigrations(): Promise<MigrationResult> {
       const filePath = path.join(migrationsDir, file)
       const content = await fs.readFile(filePath, 'utf-8')
 
-      // Split queries cleanly by semicolons outside comments
-      const statements = content
+      // Strip SQL line comments and split queries cleanly
+      const cleanContent = content.replace(/--.*$/gm, '').trim()
+      const statements = cleanContent
         .split(';')
         .map((s) => s.trim())
-        .filter((s) => s.length > 0 && !s.startsWith('--'))
+        .filter((s) => s.length > 0)
 
       await connection.beginTransaction()
 
