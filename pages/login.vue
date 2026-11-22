@@ -178,7 +178,11 @@ const handleLogin = async () => {
     const res = await auth.login(identifier.value, password.value)
     if (res.success) {
       const redirectPath = (route.query.redirect as string) || '/'
-      await navigateTo(redirectPath)
+      if (typeof window !== 'undefined') {
+        window.location.href = redirectPath
+      } else {
+        await navigateTo(redirectPath)
+      }
     } else {
       errorMessage.value = res.error || 'Invalid credentials'
     }

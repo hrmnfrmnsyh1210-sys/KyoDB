@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuth()
 
-  // Ensure we have loaded auth state from cookie/session
-  if (!auth.isChecked.value) {
+  // Only check session if user is not already authenticated in state
+  if (!auth.isAuthenticated.value && !auth.isChecked.value) {
     await auth.fetchUser()
   }
 

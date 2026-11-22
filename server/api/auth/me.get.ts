@@ -1,10 +1,19 @@
-import { hasAdminUser } from '../../services/auth.service'
+import { hasAdminUser, validateSessionToken } from '../../services/auth.service'
 
 export default defineEventHandler(async (event) => {
-  if (event.context.admin) {
+  let admin = event.context.admin
+
+  if (!admin) {
+    const token = getCookie(event, 'kyodb_session')
+    if (token) {
+      admin = await validateSessionToken(token)
+    }
+  }
+
+  if (admin) {
     return {
       authenticated: true,
-      user: event.context.admin
+      user: admin
     }
   }
 

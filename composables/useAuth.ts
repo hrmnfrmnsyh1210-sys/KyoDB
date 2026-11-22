@@ -38,6 +38,7 @@ export const useAuth = () => {
         body: { identifier, password }
       })
       user.value = res.user
+      isChecked.value = true
       requiresBootstrap.value = false
       return { success: true }
     } catch (err: any) {
