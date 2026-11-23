@@ -3,32 +3,42 @@
     class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-white border-r border-neutral-200/80 transition-transform duration-200 md:static md:translate-x-0"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
-    <!-- Brand Logo & Header -->
-    <div class="flex items-center justify-between h-18 px-6 border-b border-neutral-100">
+    <!-- Brand Logo & Header (Height 64px / h-16 matches Navbar perfectly) -->
+    <div class="flex items-center justify-between h-16 px-5 border-b border-neutral-100 shrink-0">
       <NuxtLink to="/" class="flex items-center gap-2.5 group">
-        <!-- Donezo-style Circular/Spiral Green Logo -->
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-xs"
-          style="background: linear-gradient(135deg, #16533a 0%, #144e35 100%);">
-          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" opacity="0.3"/>
-            <path d="M12 4a8 8 0 100 16 8 8 0 000-16zm-1 12V8l5 4-5 4z" />
+        <!-- Donezo-style Circular/Squircle Emerald Logo with inner motif -->
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-xs transition-transform group-hover:scale-105"
+          style="background: linear-gradient(135deg, #185a3c 0%, #12452e 100%);">
+          <!-- Geometric clean spiral loop icon -->
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
+            <circle cx="12" cy="12" r="2" fill="currentColor" />
           </svg>
         </div>
-        <div class="flex items-center">
-          <span class="text-xl font-bold tracking-tight text-neutral-900">Kyo<span class="text-[#144e35]">DB</span></span>
+
+        <div class="flex items-center gap-1.5">
+          <span class="text-lg font-bold tracking-tight text-neutral-900">
+            Kyo<span class="text-[#144e35]">DB</span>
+          </span>
+          <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+            v1.4
+          </span>
         </div>
       </NuxtLink>
 
-      <button class="md:hidden p-1.5 text-neutral-400 hover:text-neutral-700" @click="$emit('close')">
+      <button
+        class="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+        @click="$emit('close')"
+      >
         <X class="w-5 h-5" />
       </button>
     </div>
 
-    <!-- Nav List Container -->
-    <div class="flex-1 flex flex-col justify-between overflow-y-auto px-4 py-5 space-y-6">
+    <!-- Navigation List (Scrollable, neatly spaced) -->
+    <div class="flex-1 overflow-y-auto px-3.5 py-4 space-y-6">
       <!-- Section 1: MENU -->
       <div>
-        <div class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+        <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
           MENU
         </div>
         <nav class="space-y-1">
@@ -36,22 +46,32 @@
             v-for="item in primaryNavigation"
             :key="item.name"
             :to="item.to"
-            class="donezo-nav-item group"
+            class="donezo-nav-item group relative"
             :class="isActiveRoute(item.to) ? 'active' : ''"
           >
-            <component
-              :is="item.icon"
-              class="w-4.5 h-4.5 transition-colors"
-              :class="isActiveRoute(item.to) ? 'text-[#144e35]' : 'text-neutral-400 group-hover:text-neutral-600'"
-            />
-            <span class="flex-1">{{ item.name }}</span>
+            <!-- Left active indicator pill -->
+            <span
+              v-if="isActiveRoute(item.to)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-[#144e35]"
+            ></span>
 
-            <!-- Badge (e.g. 12+ like Donezo Tasks badge) -->
+            <!-- Icon with subtle background wrapper -->
+            <div
+              class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              :class="isActiveRoute(item.to) ? 'bg-[#144e35]/10 text-[#144e35]' : 'text-neutral-400 group-hover:text-neutral-700 group-hover:bg-neutral-100'"
+            >
+              <component :is="item.icon" class="w-4 h-4" />
+            </div>
+
+            <span class="flex-1 text-xs">{{ item.name }}</span>
+
+            <!-- Donezo live badge with pulse dot -->
             <span
               v-if="item.badge"
-              class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-              :class="isActiveRoute(item.to) ? 'bg-[#144e35] text-white' : 'bg-neutral-100 text-neutral-600'"
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
+              :class="isActiveRoute(item.to) ? 'bg-[#144e35] text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/80'"
             >
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" :class="isActiveRoute(item.to) ? 'bg-white' : ''"></span>
               {{ item.badge }}
             </span>
           </NuxtLink>
@@ -60,7 +80,7 @@
 
       <!-- Section 2: GENERAL -->
       <div>
-        <div class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+        <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
           GENERAL
         </div>
         <nav class="space-y-1">
@@ -68,54 +88,69 @@
             v-for="item in secondaryNavigation"
             :key="item.name"
             :to="item.to"
-            class="donezo-nav-item group"
+            class="donezo-nav-item group relative"
             :class="isActiveRoute(item.to) ? 'active' : ''"
           >
-            <component
-              :is="item.icon"
-              class="w-4.5 h-4.5 transition-colors"
-              :class="isActiveRoute(item.to) ? 'text-[#144e35]' : 'text-neutral-400 group-hover:text-neutral-600'"
-            />
-            <span>{{ item.name }}</span>
+            <span
+              v-if="isActiveRoute(item.to)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-[#144e35]"
+            ></span>
+
+            <div
+              class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              :class="isActiveRoute(item.to) ? 'bg-[#144e35]/10 text-[#144e35]' : 'text-neutral-400 group-hover:text-neutral-700 group-hover:bg-neutral-100'"
+            >
+              <component :is="item.icon" class="w-4 h-4" />
+            </div>
+
+            <span class="flex-1 text-xs">{{ item.name }}</span>
           </NuxtLink>
 
-          <!-- Sign Out -->
+          <!-- Logout -->
           <button
-            class="w-full text-left donezo-nav-item group hover:text-rose-600"
+            class="w-full text-left donezo-nav-item group hover:text-rose-600 transition-colors"
             @click="handleLogout"
           >
-            <LogOut class="w-4.5 h-4.5 text-neutral-400 group-hover:text-rose-500" />
-            <span>Logout</span>
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-rose-500 group-hover:bg-rose-50 transition-colors">
+              <LogOut class="w-4 h-4" />
+            </div>
+            <span class="flex-1 text-xs font-medium">Logout</span>
           </button>
         </nav>
       </div>
+    </div>
 
-      <!-- Bottom Card: Mobile App / Storage Widget (Exact Donezo styling) -->
-      <div class="rounded-2xl p-4 text-white relative overflow-hidden"
-        style="background: radial-gradient(circle at 100% 0%, #1a5d3f 0%, #0c2a1c 85%);">
-        <!-- Ambient wavy highlight -->
-        <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-xl pointer-events-none"
-          style="background: rgba(52, 211, 153, 0.25);"></div>
+    <!-- Bottom Widget: Dedicated, non-clipped status card -->
+    <div class="p-3.5 border-t border-neutral-100 bg-neutral-50/60 shrink-0">
+      <div
+        class="rounded-2xl p-3.5 text-white relative overflow-hidden shadow-xs"
+        style="background: radial-gradient(circle at 100% 0%, #1e6b48 0%, #0c2b1d 85%);"
+      >
+        <!-- Ambient glow -->
+        <div
+          class="absolute -right-4 -bottom-4 w-16 h-16 rounded-full blur-xl pointer-events-none"
+          style="background: rgba(52, 211, 153, 0.3);"
+        ></div>
 
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-6 h-6 rounded-lg flex items-center justify-center bg-white/15">
-            <HardDrive class="w-3.5 h-3.5 text-white" />
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center bg-white/15">
+              <HardDrive class="w-3.5 h-3.5 text-white" />
+            </div>
+            <span class="text-xs font-bold text-white">Cluster Ready</span>
           </div>
-          <span class="text-xs font-semibold">Cloud Infrastructure</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         </div>
 
-        <p class="text-[11px] text-white/75 leading-relaxed mb-3">
-          TiDB &amp; Cloudflare R2 connected &amp; ready.
+        <p class="text-[11px] text-white/75 leading-tight mb-3">
+          TiDB Cloud &amp; Cloudflare R2 connected.
         </p>
 
         <NuxtLink
           to="/storage"
-          class="block w-full py-1.5 px-3 rounded-full text-center text-xs font-semibold transition-all"
-          style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); color: #ffffff;"
-          @mouseenter="e => (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.25)'"
-          @mouseleave="e => (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.15)'"
+          class="block w-full py-1.5 px-3 rounded-full text-center text-xs font-semibold bg-white/15 hover:bg-white/25 text-white backdrop-blur-xs transition-all"
         >
-          Explore Storage
+          Explore Storage →
         </NuxtLink>
       </div>
     </div>
@@ -124,7 +159,7 @@
 
 <script setup lang="ts">
 import {
-  LayoutDashboard,
+  LayoutGrid,
   FolderKanban,
   Database,
   Terminal,
@@ -147,7 +182,7 @@ const isActiveRoute = (path: string) => {
 }
 
 const primaryNavigation = [
-  { name: 'Dashboard',     to: '/',         icon: LayoutDashboard },
+  { name: 'Dashboard',     to: '/',         icon: LayoutGrid },
   { name: 'Projects',      to: '/projects', icon: FolderKanban, badge: 'Live' },
   { name: 'Databases',     to: '/databases', icon: Database },
   { name: 'SQL Editor',    to: '/sql-editor', icon: Terminal },

@@ -1,9 +1,9 @@
 <template>
-  <header class="h-18 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 border-b border-neutral-200/80 bg-[#f4f5f6]">
-    <!-- Left: Hamburger on Mobile + Pill Search Bar (Exact Donezo style) -->
+  <header class="h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 border-b border-neutral-200/80 bg-[#f4f5f6] shrink-0">
+    <!-- Left: Hamburger on Mobile + Pill Search Bar (Donezo style) -->
     <div class="flex items-center gap-3 flex-1 max-w-md">
       <button
-        class="p-2 rounded-xl md:hidden text-neutral-600 hover:bg-white hover:text-neutral-900 border border-neutral-200 bg-white"
+        class="p-2 rounded-xl md:hidden text-neutral-600 hover:bg-white hover:text-neutral-900 border border-neutral-200 bg-white shadow-xs"
         @click="$emit('toggle-sidebar')"
       >
         <Menu class="w-5 h-5" />
@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <!-- Right Controls: Status Pills + Notifications + User Capsule -->
+    <!-- Right Controls: Status Pills + Refresh Button + User Capsule -->
     <div class="flex items-center gap-3">
       <!-- TiDB Health status pill -->
       <div
@@ -45,28 +45,28 @@
         <span class="text-neutral-500 font-normal">{{ r2StatusText }}</span>
       </div>
 
-      <!-- Notification Round Button (Donezo style) -->
+      <!-- Notification Round Button -->
       <button
-        class="w-10 h-10 rounded-full bg-white border border-neutral-200/80 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors relative"
+        class="w-9 h-9 rounded-full bg-white border border-neutral-200/80 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors relative"
         title="Refresh Status"
         :disabled="isChecking"
         @click="checkHealth"
       >
-        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': isChecking }" />
+        <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isChecking }" />
       </button>
 
       <!-- Donezo User Profile Capsule -->
-      <div class="flex items-center gap-3 pl-1 pr-3 py-1 rounded-full bg-white border border-neutral-200/80 shadow-xs">
+      <div class="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full bg-white border border-neutral-200/80 shadow-xs">
         <!-- Avatar Circle -->
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xs"
-          style="background: linear-gradient(135deg, #16533a 0%, #144e35 100%);">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shadow-xs"
+          style="background: linear-gradient(135deg, #185a3c 0%, #12452e 100%);">
           {{ userInitials }}
         </div>
 
-        <!-- Name & Email (Totok Michael style) -->
+        <!-- Name & Email -->
         <div class="hidden sm:block text-left leading-tight">
           <div class="text-xs font-semibold text-neutral-900">
-            {{ auth.user.value?.username || 'Totok Michael' }}
+            {{ auth.user.value?.username || 'Admin' }}
           </div>
           <div class="text-[10px] text-neutral-400">
             {{ auth.user.value?.email || 'admin@kyodb.local' }}
@@ -74,7 +74,7 @@
         </div>
 
         <button
-          class="text-neutral-400 hover:text-rose-600 p-1 rounded-full hover:bg-neutral-100 transition-colors ml-1"
+          class="text-neutral-400 hover:text-rose-600 p-1 rounded-full hover:bg-neutral-100 transition-colors ml-0.5"
           title="Sign Out"
           @click="handleLogout"
         >
@@ -98,7 +98,7 @@ onMounted(async () => {
 })
 
 const userInitials = computed(() => {
-  const u = auth.user.value?.username || 'TM'
+  const u = auth.user.value?.username || 'AD'
   return u.slice(0, 2).toUpperCase()
 })
 
