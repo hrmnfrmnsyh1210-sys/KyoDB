@@ -2,28 +2,28 @@
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
     <!-- Backdrop -->
     <div
-      class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm transition-opacity"
+      class="fixed inset-0 bg-neutral-900/50 backdrop-blur-xs transition-opacity"
       @click="$emit('close')"
     ></div>
 
     <!-- Modal Box -->
-    <div class="relative w-full max-w-md rounded-2xl border border-red-500/20 bg-[#1a1007] shadow-2xl shadow-red-950/30 overflow-hidden">
+    <div class="relative w-full max-w-md rounded-2xl border border-rose-200 bg-white shadow-2xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
+      <div class="flex items-center justify-between border-b border-neutral-100 px-6 py-4 bg-neutral-50/50">
         <div class="flex items-center gap-2.5">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
-            <Trash2 class="h-4 w-4" />
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 border border-rose-200 text-rose-600">
+            <Trash2 class="h-4.5 w-4.5" />
           </div>
           <div>
-            <h3 class="text-base font-semibold text-white">Delete Object(s)</h3>
-            <p class="text-xs text-[#9b8674]">
+            <h3 class="text-base font-bold text-neutral-900">Delete Object(s)</h3>
+            <p class="text-xs text-rose-600">
               Permanent removal from Cloudflare R2
             </p>
           </div>
         </div>
 
         <button
-          class="p-1 rounded-lg text-[#9b8674] hover:text-[#f0e6d8] hover:bg-[#2a1a0c] transition-colors"
+          class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
           @click="$emit('close')"
         >
           <X class="h-4 w-4" />
@@ -32,63 +32,55 @@
 
       <!-- Warning Body -->
       <div class="p-6 space-y-4">
-        <div class="rounded-xl border border-red-500/20 bg-red-950/20 p-4 text-xs text-red-300 flex items-start gap-3">
-          <AlertTriangle class="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+        <div class="rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-xs text-rose-800 flex items-start gap-3">
+          <AlertTriangle class="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
           <div class="space-y-1">
-            <span class="font-semibold text-red-200">Warning: This action is permanent!</span>
-            <p class="text-[#d6c6b4]">
+            <span class="font-bold text-rose-900">Warning: This action is permanent!</span>
+            <p class="text-neutral-700">
               Deleting these items will remove them immediately from Cloudflare R2 bucket storage and metadata tracking.
             </p>
           </div>
         </div>
 
-        <!-- Target List Preview -->
+        <!-- Selected Items Preview -->
         <div class="space-y-2">
-          <div class="text-xs text-[#9b8674]">
-            Target Item(s) to Delete ({{ items.length }}):
+          <div class="text-xs font-semibold text-neutral-700">
+            Items to be deleted ({{ items.length }}):
           </div>
-          <div class="max-h-40 overflow-y-auto space-y-1 rounded-xl border border-[#2e1c0d] bg-[#1c1208] p-2.5 text-xs font-mono">
+          <div class="max-h-32 overflow-y-auto rounded-xl border border-neutral-200 bg-neutral-50 p-2 space-y-1">
             <div
-              v-for="(item, idx) in items"
-              :key="idx"
-              class="flex items-center gap-2 text-[#d6c6b4] truncate"
+              v-for="item in items"
+              :key="item.key"
+              class="flex items-center justify-between text-[11px] font-mono py-1 px-2 rounded hover:bg-neutral-100"
             >
-              <Folder v-if="item.type === 'folder'" class="h-3.5 w-3.5 text-[#e8882a] shrink-0" />
-              <File v-else class="h-3.5 w-3.5 text-[#9b8674] shrink-0" />
-              <span class="truncate" :title="item.key">{{ item.name || item.key }}</span>
+              <span class="truncate text-neutral-800 max-w-[220px]" :title="item.name">{{ item.name }}</span>
+              <span class="text-neutral-400 uppercase text-[10px] shrink-0 ml-2">{{ item.type }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Confirmation Checkbox -->
-        <label class="flex items-center gap-2 text-xs text-[#d6c6b4] cursor-pointer pt-1">
-          <input
-            v-model="isConfirmed"
-            type="checkbox"
-            class="rounded border-[#3a2410] bg-[#1c1208] text-red-500 focus:ring-red-500/30"
-          />
-          <span>I understand that this action cannot be undone.</span>
-        </label>
+        <!-- Error display -->
+        <div v-if="errorMessage" class="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700">
+          {{ errorMessage }}
+        </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-2 pt-2">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-neutral-100">
           <button
             type="button"
-            class="rounded-xl border border-[#3a2410] bg-[#2a1a0c] px-4 py-2 text-xs font-semibold text-[#d6c6b4] hover:bg-[#3a2410] transition-colors"
+            class="btn-white-pill px-4 py-2 text-xs font-semibold"
             @click="$emit('close')"
           >
             Cancel
           </button>
-
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-red-600/30 hover:bg-red-500 transition-all disabled:opacity-50"
-            :disabled="!isConfirmed || isLoading"
-            @click="handleDelete"
+            :disabled="isDeleting"
+            class="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-5 py-2 text-xs font-semibold text-white shadow-sm disabled:opacity-50 transition-colors"
+            @click="handleConfirm"
           >
-            <Loader2 v-if="isLoading" class="h-3.5 w-3.5 animate-spin" />
-            <Trash2 v-else class="h-3.5 w-3.5" />
-            <span>{{ isLoading ? 'Deleting...' : `Delete ${items.length} Item(s)` }}</span>
+            <RefreshCw v-if="isDeleting" class="h-3.5 w-3.5 animate-spin" />
+            <span>{{ isDeleting ? 'Deleting...' : 'Confirm Delete' }}</span>
           </button>
         </div>
       </div>
@@ -97,41 +89,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Trash2, AlertTriangle, X, Folder, File, Loader2 } from '@lucide/vue'
+import { Trash2, X, AlertTriangle, RefreshCw } from '@lucide/vue'
 import type { StorageItem } from '~/types'
 
 const props = defineProps<{
   isOpen: boolean
   items: StorageItem[]
+  isDeleting?: boolean
+  errorMessage?: string | null
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'deleted'): void
+  (e: 'confirm'): void
 }>()
 
-const isConfirmed = ref(false)
-const isLoading = ref(false)
-
-async function handleDelete() {
-  if (!isConfirmed.value || props.items.length === 0 || isLoading.value) return
-  isLoading.value = true
-
-  try {
-    const keys = props.items.map((i) => i.key)
-    await $fetch('/api/storage/delete', {
-      method: 'POST',
-      body: { keys }
-    })
-
-    isConfirmed.value = false
-    emit('deleted')
-    emit('close')
-  } catch (err: any) {
-    alert(err.data?.statusMessage || err.message || 'Failed to delete items')
-  } finally {
-    isLoading.value = false
-  }
+const handleConfirm = () => {
+  emit('confirm')
 }
 </script>

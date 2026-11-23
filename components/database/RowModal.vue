@@ -1,21 +1,21 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm" @click="$emit('close')"></div>
+    <div class="fixed inset-0 bg-neutral-900/50 backdrop-blur-xs transition-opacity" @click="$emit('close')"></div>
 
-    <div class="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl border border-[#2e1c0d] bg-[#1a1007] shadow-2xl overflow-hidden">
+    <div class="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl border border-neutral-200 bg-white shadow-2xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
-        <h3 class="text-base font-semibold text-warm">
+      <div class="flex items-center justify-between border-b border-neutral-100 px-6 py-4 bg-neutral-50/50">
+        <h3 class="text-base font-bold text-neutral-900">
           {{ isEditing ? 'Edit Record' : 'Insert New Record' }}
         </h3>
-        <button class="p-1 rounded-lg text-muted-warm hover:text-warm" @click="$emit('close')">
+        <button class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors" @click="$emit('close')">
           <X class="h-4 w-4" />
         </button>
       </div>
 
       <!-- Error Message Banner -->
-      <div v-if="errorMessage" class="m-6 mb-0 rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-300 flex items-start gap-2">
-        <AlertTriangle class="h-4 w-4 shrink-0 mt-0.5 text-red-400" />
+      <div v-if="errorMessage" class="m-6 mb-0 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 flex items-start gap-2">
+        <AlertTriangle class="h-4 w-4 shrink-0 mt-0.5 text-rose-500" />
         <span>{{ errorMessage }}</span>
       </div>
 
@@ -23,16 +23,16 @@
       <form class="flex-1 overflow-y-auto p-6 space-y-4" @submit.prevent="handleSubmit">
         <div v-for="col in columns" :key="col.name" class="space-y-1">
           <div class="flex items-center justify-between">
-            <label class="text-xs font-medium text-muted-warm flex items-center gap-1.5">
+            <label class="text-xs font-semibold text-neutral-700 flex items-center gap-1.5">
               <span>{{ col.name }}</span>
-              <span v-if="col.key === 'PRI'" class="text-[10px] text-amber-400 font-bold">(PK)</span>
-              <span v-if="!col.nullable && !col.extra.includes('auto_increment')" class="text-amber-accent">*</span>
+              <span v-if="col.key === 'PRI'" class="text-[10px] text-amber-600 font-bold">(PK)</span>
+              <span v-if="!col.nullable && !col.extra.includes('auto_increment')" class="text-[#144e35]">*</span>
             </label>
-            <span class="text-[10px] text-faint-warm font-mono">{{ col.type }}</span>
+            <span class="text-[10px] text-neutral-400 font-mono">{{ col.type }}</span>
           </div>
 
           <!-- Auto Increment hint -->
-          <div v-if="!isEditing && col.extra.includes('auto_increment')" class="text-[11px] text-faint-warm italic">
+          <div v-if="!isEditing && col.extra.includes('auto_increment')" class="text-[11px] text-neutral-400 italic">
             Auto-generated on insert
           </div>
 
@@ -42,22 +42,22 @@
               v-if="col.type.toLowerCase().includes('text') || col.type.toLowerCase().includes('json')"
               v-model="formData[col.name]"
               rows="3"
-              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2 text-xs font-mono text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none"
+              class="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs font-mono text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-[#144e35] focus:outline-none"
             ></textarea>
             <input
               v-else
               v-model="formData[col.name]"
               :disabled="isEditing && col.key === 'PRI'"
               type="text"
-              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2 text-xs font-mono text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none disabled:opacity-50"
+              class="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2 text-xs font-mono text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-[#144e35] focus:outline-none disabled:bg-neutral-100 disabled:text-neutral-400"
             />
           </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#2e1c0d]">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-neutral-100">
           <button
             type="button"
-            class="rounded-xl border border-[#3a2410] px-4 py-2 text-xs font-medium text-muted-warm hover:bg-[#2a1a0c]"
+            class="btn-white-pill px-4 py-2 text-xs font-semibold"
             @click="$emit('close')"
           >
             Cancel
@@ -65,10 +65,10 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="inline-flex items-center gap-2 rounded-xl btn-amber px-5 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:bg-[#f9a84a] disabled:opacity-50"
+            class="btn-forest inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold"
           >
             <RefreshCw v-if="isSubmitting" class="h-3.5 w-3.5 animate-spin" />
-            <span>{{ isEditing ? 'Save Changes' : 'Insert Row' }}</span>
+            <span>{{ isEditing ? 'Save Changes' : 'Insert Record' }}</span>
           </button>
         </div>
       </form>
@@ -82,81 +82,42 @@ import type { TableColumn } from '~/types'
 
 const props = defineProps<{
   isOpen: boolean
-  databaseName: string
-  tableName: string
+  isEditing: boolean
   columns: TableColumn[]
-  rowToEdit?: Record<string, any> | null
-  primaryKey?: string | null
+  initialData?: Record<string, any> | null
+  primaryKeyCol?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'saved'): void
+  (e: 'save', data: Record<string, any>): void
 }>()
 
-const { insertRow, updateRow } = useDatabases()
-
-const isEditing = computed(() => !!props.rowToEdit)
+const formData = ref<Record<string, any>>({})
 const isSubmitting = ref(false)
 const errorMessage = ref<string | null>(null)
-const formData = reactive<Record<string, any>>({})
 
 watch(
   () => props.isOpen,
   (open) => {
     if (open) {
       errorMessage.value = null
-      Object.keys(formData).forEach((k) => delete formData[k])
-
-      if (props.rowToEdit) {
-        props.columns.forEach((col) => {
-          formData[col.name] = props.rowToEdit?.[col.name] ?? ''
-        })
+      if (props.isEditing && props.initialData) {
+        formData.value = { ...props.initialData }
       } else {
+        const fresh: Record<string, any> = {}
         props.columns.forEach((col) => {
           if (!col.extra.includes('auto_increment')) {
-            formData[col.name] = col.default ?? ''
+            fresh[col.name] = col.default ?? ''
           }
         })
+        formData.value = fresh
       }
     }
   }
 )
 
-const handleSubmit = async () => {
-  isSubmitting.value = true
-  errorMessage.value = null
-
-  try {
-    if (isEditing.value && props.primaryKey && props.rowToEdit) {
-      const pkVal = props.rowToEdit[props.primaryKey]
-      const res = await updateRow(props.databaseName, props.tableName, props.primaryKey, pkVal, formData)
-      if (res.success) {
-        emit('saved')
-        emit('close')
-      } else {
-        errorMessage.value = res.error || 'Failed to update record'
-      }
-    } else {
-      const payload: Record<string, any> = {}
-      props.columns.forEach((col) => {
-        if (!col.extra.includes('auto_increment') && formData[col.name] !== undefined && formData[col.name] !== '') {
-          payload[col.name] = formData[col.name]
-        }
-      })
-
-      const res = await insertRow(props.databaseName, props.tableName, payload)
-      if (res.success) {
-        emit('saved')
-        emit('close')
-      } else {
-        errorMessage.value = res.error || 'Failed to insert record'
-      }
-    }
-  } catch (err: any) {
-    errorMessage.value = err.message || 'An unexpected error occurred'
-  } finally {
-    isSubmitting.value = false
-  }
+const handleSubmit = () => {
+  emit('save', { ...formData.value })
 }
 </script>
