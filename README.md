@@ -99,7 +99,7 @@ On first launch, if no admin account exists, KyoDB automatically prompts you to 
 
 ## 🧪 Testing
 
-To execute automated test suites (Argon2id crypto, session hashing, health checks):
+To execute automated test suites (Argon2id crypto, session hashing, health checks, project validators, database & SQL editor security — 51 tests):
 ```bash
 npm test
 ```
@@ -117,3 +117,20 @@ npm run build
 - **Argon2id:** Master passwords are protected using memory-hard Argon2id hashing.
 - **Rate Limiting:** Protects admin login against brute-force attacks.
 - **Direct-to-R2:** Browser connects to Cloudflare R2 via short-lived pre-signed URLs; master S3 credentials never reach client browsers.
+- **SQL Identifier Escaping:** All TiDB database, table, and column names are validated against strict regex (`^[a-zA-Z0-9_]{1,64}$`) and backtick-escaped in all DDL and DML queries.
+- **System Database Guard:** `kyodb_system`, `mysql`, `information_schema`, `performance_schema`, `sys` are protected from deletion or arbitrary destructive modification.
+- **Read-Only Mode Enforcement:** In read-only mode, queries containing write/DDL patterns (INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, etc.) are blocked both at validation and execution.
+- **Query Telemetry & Safety Caps:** Output rows are capped at 1,000 records to prevent browser DOM collapse, and execution times are logged to `query_history`.
+
+---
+
+## 📋 Development Roadmap
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| **Phase 1** | Foundation: Nuxt setup, TiDB + R2 connections, auth, dashboard | ✅ **Complete** |
+| **Phase 2** | Project Manager: Project CRUD, database association, R2 scoping | ✅ **Complete** |
+| **Phase 3** | Database Manager: Explorer, table mgmt, data editor, SQL editor | ✅ **Complete** |
+| **Phase 4** | Storage Manager: R2 upload, preview, download, virtual folders | ✅ **Complete** |
+| **Phase 5** | Monitoring: Usage stats, audit logs, query history | 🔜 Upcoming |
+| **Phase 6** | API Management: API keys, security hardening, Vercel deploy | 🔜 Upcoming |

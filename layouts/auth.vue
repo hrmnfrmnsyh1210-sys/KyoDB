@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#070b12] p-4 relative overflow-hidden">
-    <!-- Glowing Accent Background Blobs -->
-    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style="background:#0d0804;">
+    <!-- Warm ambient blobs -->
+    <div class="absolute top-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none" style="background:rgba(180,70,10,0.12); transform:translate(-30%,-30%);"></div>
+    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none" style="background:rgba(120,45,5,0.1); transform:translate(30%,30%);"></div>
 
     <div class="w-full max-w-md relative z-10">
       <slot />

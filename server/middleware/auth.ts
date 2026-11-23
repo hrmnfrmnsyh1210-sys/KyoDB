@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Protect internal admin-specific or migration endpoints
+  // Protect internal admin-specific endpoints
   const path = getRequestPath(event)
   if (path.startsWith('/api/migrations/run')) {
     if (!event.context.admin) {
@@ -18,6 +18,39 @@ export default defineEventHandler(async (event) => {
         statusCode: 401,
         statusMessage: 'Unauthorized. Admin session required.'
       })
+    }
+  }
+
+  // Protect project mutation endpoints
+  if (path.startsWith('/api/projects') && (event.method === 'POST' || event.method === 'PUT' || event.method === 'DELETE')) {
+    if (!event.context.admin) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized. Admin session required.'
+      })
+    }
+  }
+
+  // Protect database management and SQL execution mutation endpoints
+  if (path.startsWith('/api/databases') && (event.method === 'POST' || event.method === 'PUT' || event.method === 'DELETE')) {
+    if (!event.context.admin) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized. Admin session required.'
+      })
+    }
+  }
+
+  // Protect storage mutation endpoints
+  if (path.startsWith('/api/storage') && (event.method === 'POST' || event.method === 'PUT' || event.method === 'DELETE')) {
+    // Allow mock upload/download for dev
+    if (!path.startsWith('/api/storage/mock-')) {
+      if (!event.context.admin) {
+        throw createError({
+          statusCode: 401,
+          statusMessage: 'Unauthorized. Admin session required.'
+        })
+      }
     }
   }
 })

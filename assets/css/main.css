@@ -1,2 +1,110 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/* ═══════════════════════════════════════════════════════
+   KyoDB – Warm Amber Dark Theme
+   Inspired by premium financial/data dashboard design
+   Background: deep warm brown/charcoal
+   Accent: amber-orange (#e8882a)
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Core backgrounds */
+  --kyodb-bg:          #130d07;
+  --kyodb-bg-card:     #1c1208;
+  --kyodb-bg-elevated: #231509;
+  --kyodb-bg-hover:    #2a1a0c;
+
+  /* Borders */
+  --kyodb-border:      #2e1c0d;
+  --kyodb-border-soft: #3a2410;
+
+  /* Accent – amber orange */
+  --kyodb-amber:       #e8882a;
+  --kyodb-amber-light: #f9a84a;
+  --kyodb-amber-glow:  rgba(232,136,42,0.15);
+  --kyodb-amber-bg:    rgba(232,136,42,0.08);
+
+  /* Text */
+  --kyodb-text:        #f0e6d8;
+  --kyodb-text-muted:  #9a8070;
+  --kyodb-text-faint:  #6a5545;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--kyodb-bg); }
+::-webkit-scrollbar-thumb { background: var(--kyodb-border-soft); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--kyodb-amber); }
+
+/* Selection */
+::selection { background: var(--kyodb-amber-glow); color: var(--kyodb-text); }
+
+/* Smooth transitions globally */
+* { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Glow helpers */
+.amber-glow {
+  box-shadow: 0 0 24px rgba(232,136,42,0.25), 0 0 8px rgba(232,136,42,0.12);
+}
+.amber-glow-sm {
+  box-shadow: 0 0 12px rgba(232,136,42,0.18);
+}
+
+/* Warm gradient card */
+.card-warm {
+  background: linear-gradient(135deg, #1c1208 0%, #1a1007 60%, #180e06 100%);
+  border: 1px solid var(--kyodb-border);
+}
+
+/* Shimmer skeleton */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-warm {
+  background: linear-gradient(90deg, #1c1208 25%, #2a1a0c 50%, #1c1208 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+/* Amber gradient button */
+.btn-amber {
+  background: linear-gradient(135deg, #e8882a 0%, #d4701a 100%);
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(232,136,42,0.3);
+  transition: all 0.2s;
+}
+.btn-amber:hover {
+  background: linear-gradient(135deg, #f9a84a 0%, #e8882a 100%);
+  box-shadow: 0 6px 20px rgba(232,136,42,0.4);
+  transform: translateY(-1px);
+}
+.btn-amber:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Sidebar icon-only style */
+.sidebar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--kyodb-text-muted);
+  transition: all 0.18s;
+}
+.sidebar-icon-btn:hover {
+  background: var(--kyodb-bg-hover);
+  color: var(--kyodb-text);
+}
+.sidebar-icon-btn.active {
+  background: var(--kyodb-amber-bg);
+  color: var(--kyodb-amber);
+  box-shadow: 0 0 0 1px var(--kyodb-border-soft);
+}
