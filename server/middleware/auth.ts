@@ -7,12 +7,34 @@ export default defineEventHandler(async (event) => {
     const admin = await validateSessionToken(token)
     if (admin) {
       event.context.admin = admin
+      event.context.user = admin
     }
   }
 
-  // Protect internal admin-specific endpoints
   const path = getRequestPath(event)
+
+  // Protect internal admin-specific endpoints
   if (path.startsWith('/api/migrations/run')) {
+    if (!event.context.admin) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized. Admin session required.'
+      })
+    }
+  }
+
+  // Protect monitoring endpoints
+  if (path.startsWith('/api/monitoring')) {
+    if (!event.context.admin) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized. Admin session required.'
+      })
+    }
+  }
+
+  // Protect API key management endpoints
+  if (path.startsWith('/api/api-keys')) {
     if (!event.context.admin) {
       throw createError({
         statusCode: 401,

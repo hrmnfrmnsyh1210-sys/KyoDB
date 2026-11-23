@@ -100,7 +100,7 @@ export interface ProjectDetail extends Project {
 export interface CreateProjectPayload {
   name: string
   slug: string
-  description?: string | null
+  description?: string
   status?: ProjectStatus
   databaseOption?: 'none' | 'create_new' | 'attach_existing'
   databaseName?: string
@@ -112,11 +112,6 @@ export interface UpdateProjectPayload {
   status?: ProjectStatus
 }
 
-export interface AttachDatabasePayload {
-  databaseName: string
-  createNew?: boolean
-}
-
 export interface AvailableDatabase {
   databaseName: string
   isAssociated: boolean
@@ -124,13 +119,21 @@ export interface AvailableDatabase {
   associatedProjectName?: string | null
 }
 
-export interface DatabaseInfo {
+export interface DatabaseSummary {
   name: string
   tablesCount: number
-  sizeBytes: number
   isSystem: boolean
   charset?: string
   collation?: string
+}
+
+export interface TableSummary {
+  name: string
+  rowCount: number
+  dataSize: number
+  indexSize: number
+  comment?: string
+  createdAt?: string
 }
 
 export interface TableColumn {
@@ -138,7 +141,7 @@ export interface TableColumn {
   type: string
   nullable: boolean
   key: string
-  default: string | null
+  default: any
   extra: string
   comment?: string
 }
@@ -146,25 +149,23 @@ export interface TableColumn {
 export interface TableIndex {
   name: string
   columnName: string
-  isUnique: boolean
-  type: string
+  nonUnique: boolean
+  seqInIndex: number
 }
 
-export interface TableInfo {
+export interface TableDetail {
   name: string
+  databaseName: string
+  columns: TableColumn[]
+  indexes: TableIndex[]
+  rowCount: number
+  dataSizeBytes: number
   engine: string
-  rows: number
-  dataLengthBytes: number
-  indexLengthBytes: number
-  collation: string
-  comment: string
-  columns?: TableColumn[]
-  indexes?: TableIndex[]
 }
 
-export interface TableDataResponse {
-  columns: string[]
+export interface TableRowsResult {
   rows: Record<string, any>[]
+  columns: TableColumn[]
   totalRows: number
   page: number
   pageSize: number
@@ -263,5 +264,85 @@ export interface DeleteStoragePayload {
   projectId?: string | null
 }
 
+// ═══════════════════════════════════════════════════════
+// Phase 5: Resource Monitoring & Telemetry Types
+// ═══════════════════════════════════════════════════════
 
+export interface SystemResourceStats {
+  uptimeSeconds: number
+  uptimeFormatted: string
+  nodeVersion: string
+  platform: string
+  arch: string
+  pid: number
+  memory: {
+    heapUsedBytes: number
+    heapTotalBytes: number
+    rssBytes: number
+    heapUsedMb: number
+    heapTotalMb: number
+    rssMb: number
+    heapPercent: number
+  }
+  cpuUsage: {
+    userMicros: number
+    systemMicros: number
+  }
+  tidb: ConnectionHealth
+  r2: ConnectionHealth
+  counts: {
+    totalProjects: number
+    totalDatabases: number
+    totalTables: number
+    totalFiles: number
+    totalAuditLogs: number
+    totalQueriesExecuted: number
+    avgQueryTimeMs: number
+  }
+}
 
+export interface AuditLogListResponse {
+  items: AuditLogEntry[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+export interface QueryHistoryListResponse {
+  items: QueryHistoryRecord[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+// ═══════════════════════════════════════════════════════
+// Phase 6: API Keys & Security Management Types
+// ═══════════════════════════════════════════════════════
+
+export interface ApiKey {
+  id: string
+  projectId: string
+  projectName?: string
+  name: string
+  keyPrefix: string
+  permissions: string[]
+  expiresAt: string | null
+  revokedAt: string | null
+  createdAt: string
+  isRevoked: boolean
+  isExpired: boolean
+}
+
+export interface CreateApiKeyPayload {
+  name: string
+  projectId: string
+  permissions: string[]
+  expiresInDays?: number | null
+}
+
+export interface CreateApiKeyResponse {
+  apiKey: ApiKey
+  plainKey: string
+}

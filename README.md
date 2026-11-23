@@ -99,7 +99,7 @@ On first launch, if no admin account exists, KyoDB automatically prompts you to 
 
 ## 🧪 Testing
 
-To execute automated test suites (Argon2id crypto, session hashing, health checks, project validators, database & SQL editor security — 51 tests):
+To execute automated test suites (Argon2id crypto, session hashing, health checks, project validators, database & SQL editor security, telemetry monitoring, API key lifecycle — 103 tests):
 ```bash
 npm test
 ```
@@ -121,6 +121,7 @@ npm run build
 - **System Database Guard:** `kyodb_system`, `mysql`, `information_schema`, `performance_schema`, `sys` are protected from deletion or arbitrary destructive modification.
 - **Read-Only Mode Enforcement:** In read-only mode, queries containing write/DDL patterns (INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, etc.) are blocked both at validation and execution.
 - **Query Telemetry & Safety Caps:** Output rows are capped at 1,000 records to prevent browser DOM collapse, and execution times are logged to `query_history`.
+- **API Key Scoping & Cryptographic Tokens:** API keys are generated using CSPRNG (`crypto.randomBytes(24)`), stored exclusively as SHA-256 hashes, scoped to specific projects, and granted granular permissions.
 
 ---
 
@@ -132,5 +133,5 @@ npm run build
 | **Phase 2** | Project Manager: Project CRUD, database association, R2 scoping | ✅ **Complete** |
 | **Phase 3** | Database Manager: Explorer, table mgmt, data editor, SQL editor | ✅ **Complete** |
 | **Phase 4** | Storage Manager: R2 upload, preview, download, virtual folders | ✅ **Complete** |
-| **Phase 5** | Monitoring: Usage stats, audit logs, query history | 🔜 Upcoming |
-| **Phase 6** | API Management: API keys, security hardening, Vercel deploy | 🔜 Upcoming |
+| **Phase 5** | Monitoring: Usage stats, telemetry cards, audit logs, query history | ✅ **Complete** |
+| **Phase 6** | API Management: API keys CRUD, permission scoping, security hardening | ✅ **Complete** |
