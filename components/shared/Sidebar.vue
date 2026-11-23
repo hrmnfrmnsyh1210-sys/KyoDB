@@ -5,25 +5,16 @@
   >
     <!-- Brand Logo & Header (Height 64px / h-16 matches Navbar perfectly) -->
     <div class="flex items-center justify-between h-16 px-5 border-b border-neutral-100 shrink-0">
-      <NuxtLink to="/" class="flex items-center gap-2.5 group">
-        <!-- Donezo-style Circular/Squircle Emerald Logo with inner motif -->
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-xs transition-transform group-hover:scale-105"
-          style="background: linear-gradient(135deg, #185a3c 0%, #12452e 100%);">
-          <!-- Geometric clean spiral loop icon -->
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-            <circle cx="12" cy="12" r="2" fill="currentColor" />
-          </svg>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="text-lg font-bold tracking-tight text-neutral-900">
-            Kyo<span class="text-[#144e35]">DB</span>
-          </span>
-          <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
-            v1.4
-          </span>
-        </div>
+      <NuxtLink to="/" class="flex items-center gap-2 group">
+        <!-- Official KyoDB Brand Logo -->
+        <img
+          src="/images/logo.webp"
+          alt="KyoDB Logo"
+          class="h-8.5 w-auto max-w-[165px] object-contain transition-transform group-hover:scale-102"
+        />
+        <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+          v1.4
+        </span>
       </NuxtLink>
 
       <button
@@ -120,7 +111,7 @@
       </div>
     </div>
 
-    <!-- Bottom Widget: Dedicated, non-clipped status card -->
+    <!-- Bottom Widget: Dedicated status card -->
     <div class="p-3.5 border-t border-neutral-100 bg-neutral-50/60 shrink-0">
       <div
         class="rounded-2xl p-3.5 text-white relative overflow-hidden shadow-xs"

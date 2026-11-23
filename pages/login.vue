@@ -1,19 +1,16 @@
 <template>
   <div class="donezo-card p-8 sm:p-10 shadow-lg border border-neutral-200">
-    <!-- Brand Title -->
+    <!-- Brand Title & Official Logo -->
     <div class="text-center mb-8">
-      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-sm mb-4"
-        style="background: linear-gradient(135deg, #16533a 0%, #144e35 100%);">
-        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" opacity="0.3"/>
-          <path d="M12 4a8 8 0 100 16 8 8 0 000-16zm-1 12V8l5 4-5 4z" />
-        </svg>
-      </div>
-      <h1 class="text-2xl font-bold tracking-tight text-neutral-900">
-        Kyo<span class="text-[#144e35]">DB</span>
-      </h1>
-      <p class="text-xs text-neutral-400 mt-1">
-        Plan, prioritize, and accomplish your tasks with ease.
+      <NuxtLink to="/" class="inline-block mb-3">
+        <img
+          src="/images/logo.webp"
+          alt="KyoDB"
+          class="h-12 w-auto mx-auto object-contain transition-transform hover:scale-105"
+        />
+      </NuxtLink>
+      <p class="text-xs text-neutral-400">
+        Unified management for TiDB Cloud &amp; Cloudflare R2
       </p>
     </div>
 

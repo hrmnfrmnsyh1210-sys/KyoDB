@@ -9,6 +9,14 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 3
   },
+  app: {
+    head: {
+      title: 'KyoDB - Smart Database & Cloud Storage Manager',
+      link: [
+        { rel: 'icon', type: 'image/webp', href: '/images/logo.webp' }
+      ]
+    }
+  },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     // Private keys only available on server

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
+  <div class="min-h-screen bg-[#f4f5f6] text-neutral-900 antialiased selection:bg-emerald-100 selection:text-emerald-800">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
