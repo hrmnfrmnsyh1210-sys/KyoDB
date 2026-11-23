@@ -162,7 +162,7 @@ const successMessage = ref<string | null>(null)
 onMounted(async () => {
   await auth.fetchUser()
   if (auth.isAuthenticated.value) {
-    await navigateTo('/')
+    await navigateTo('/dashboard')
   }
 })
 
@@ -174,7 +174,7 @@ const handleLogin = async () => {
   try {
     const res = await auth.login(identifier.value, password.value)
     if (res.success) {
-      const redirectPath = (route.query.redirect as string) || '/'
+      const redirectPath = (route.query.redirect as string) || '/dashboard'
       if (typeof window !== 'undefined') {
         window.location.href = redirectPath
       } else {

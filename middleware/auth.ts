@@ -6,16 +6,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     await auth.fetchUser()
   }
 
+  // Public accessible routes
+  const publicRoutes = ['/', '/login', '/docs']
+  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/docs')
+
   // If user is not authenticated and trying to access protected route, redirect to login
-  if (!auth.isAuthenticated.value && to.path !== '/login') {
+  if (!auth.isAuthenticated.value && !isPublicRoute) {
     return navigateTo({
       path: '/login',
       query: { redirect: to.fullPath }
     })
   }
 
-  // If user is authenticated and navigating to login, redirect to home
+  // If user is authenticated and navigating to login, redirect to dashboard
   if (auth.isAuthenticated.value && to.path === '/login') {
-    return navigateTo('/')
+    return navigateTo('/dashboard')
   }
 })

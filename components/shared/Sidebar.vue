@@ -5,7 +5,7 @@
   >
     <!-- Brand Logo & Header (Height 64px / h-16 matches Navbar perfectly) -->
     <div class="flex items-center justify-between h-16 px-5 border-b border-neutral-100 shrink-0">
-      <NuxtLink to="/" class="flex items-center gap-2 group">
+      <NuxtLink to="/dashboard" class="flex items-center gap-2 group">
         <!-- Official KyoDB Brand Logo -->
         <img
           src="/images/logo.webp"
@@ -157,6 +157,7 @@ import {
   HardDrive,
   Activity,
   Settings,
+  BookOpen,
   LogOut,
   X
 } from '@lucide/vue'
@@ -168,21 +169,22 @@ const route = useRoute()
 const auth = useAuth()
 
 const isActiveRoute = (path: string) => {
-  if (path === '/') return route.path === '/'
-  return route.path.startsWith(path)
+  if (path === '/dashboard') return route.path === '/dashboard'
+  return route.path === path || (path !== '/dashboard' && route.path.startsWith(path) && path.length > 1)
 }
 
 const primaryNavigation = [
-  { name: 'Dashboard',     to: '/',         icon: LayoutGrid },
-  { name: 'Projects',      to: '/projects', icon: FolderKanban, badge: 'Live' },
-  { name: 'Databases',     to: '/databases', icon: Database },
+  { name: 'Dashboard',     to: '/dashboard', icon: LayoutGrid },
+  { name: 'Projects',      to: '/projects',   icon: FolderKanban, badge: 'Live' },
+  { name: 'Databases',     to: '/databases',  icon: Database },
   { name: 'SQL Editor',    to: '/sql-editor', icon: Terminal },
-  { name: 'Cloud Storage', to: '/storage',   icon: HardDrive },
+  { name: 'Cloud Storage', to: '/storage',    icon: HardDrive },
 ]
 
 const secondaryNavigation = [
-  { name: 'Monitoring',   to: '/monitoring', icon: Activity },
-  { name: 'Settings',     to: '/settings',   icon: Settings },
+  { name: 'Monitoring',    to: '/monitoring', icon: Activity },
+  { name: 'Settings',      to: '/settings',   icon: Settings },
+  { name: 'Documentation', to: '/docs',       icon: BookOpen },
 ]
 
 const handleLogout = async () => {
