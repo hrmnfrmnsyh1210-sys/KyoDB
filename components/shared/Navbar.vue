@@ -1,89 +1,84 @@
 <template>
-  <header
-    class="h-14 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6"
-    style="background:#0d0804; border-bottom:1px solid #2a1a0c;"
-  >
-    <!-- Left: Mobile hamburger + Search bar -->
-    <div class="flex items-center gap-3 flex-1">
+  <header class="h-18 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 border-b border-neutral-200/80 bg-[#f4f5f6]">
+    <!-- Left: Hamburger on Mobile + Pill Search Bar (Exact Donezo style) -->
+    <div class="flex items-center gap-3 flex-1 max-w-md">
       <button
-        class="p-2 rounded-lg md:hidden transition-colors"
-        style="color:#9a8070;"
+        class="p-2 rounded-xl md:hidden text-neutral-600 hover:bg-white hover:text-neutral-900 border border-neutral-200 bg-white"
         @click="$emit('toggle-sidebar')"
       >
         <Menu class="w-5 h-5" />
       </button>
 
-      <!-- Search pill — matches reference design -->
-      <div class="hidden sm:flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs max-w-xs w-full cursor-pointer group transition-all"
-        style="background:#1c1208; border:1px solid #2e1c0d; color:#9a8070;"
-      >
-        <Search class="w-3.5 h-3.5 shrink-0" />
-        <span class="flex-1">Search...</span>
-        <kbd class="text-[10px] rounded px-1.5 py-0.5 font-mono" style="background:#2a1a0c; color:#6a5545;">⌘K</kbd>
+      <!-- Pill Search Bar with ⌘F -->
+      <div class="flex items-center gap-2.5 rounded-full px-4 py-2 bg-white border border-neutral-200/80 shadow-xs w-full text-xs transition-all focus-within:border-[#144e35] focus-within:ring-1 focus-within:ring-[#144e35]/20">
+        <Search class="w-4 h-4 text-neutral-400 shrink-0" />
+        <input
+          type="text"
+          placeholder="Search task, project, database or files..."
+          class="w-full bg-transparent border-none outline-none text-neutral-800 placeholder-neutral-400 text-xs"
+        />
+        <kbd class="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-semibold text-neutral-400 bg-neutral-100 px-2 py-0.5 rounded-md border border-neutral-200">
+          ⌘F
+        </kbd>
       </div>
     </div>
 
-    <!-- Right side controls -->
-    <div class="flex items-center gap-2">
-      <!-- TiDB status pill -->
+    <!-- Right Controls: Status Pills + Notifications + User Capsule -->
+    <div class="flex items-center gap-3">
+      <!-- TiDB Health status pill -->
       <div
-        class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono border"
-        :style="tidbStyleObj"
+        class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-xs"
+        :class="tidbClass"
       >
-        <span class="w-1.5 h-1.5 rounded-full" :class="tidbDotClasses"></span>
-        <span class="font-medium">TiDB</span>
-        <span>{{ tidbStatusText }}</span>
+        <span class="w-2 h-2 rounded-full" :class="tidbDotClass"></span>
+        <span class="font-semibold">TiDB</span>
+        <span class="text-neutral-500 font-normal">{{ tidbStatusText }}</span>
       </div>
 
-      <!-- R2 status pill -->
+      <!-- R2 Health status pill -->
       <div
-        class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono border"
-        :style="r2StyleObj"
+        class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-xs"
+        :class="r2Class"
       >
-        <span class="w-1.5 h-1.5 rounded-full" :class="r2DotClasses"></span>
-        <span class="font-medium">R2</span>
-        <span>{{ r2StatusText }}</span>
+        <span class="w-2 h-2 rounded-full" :class="r2DotClass"></span>
+        <span class="font-semibold">R2</span>
+        <span class="text-neutral-500 font-normal">{{ r2StatusText }}</span>
       </div>
 
-      <!-- Refresh -->
+      <!-- Notification Round Button (Donezo style) -->
       <button
-        class="p-2 rounded-lg transition-colors"
-        style="color:#9a8070;"
-        title="Refresh Connection Status"
+        class="w-10 h-10 rounded-full bg-white border border-neutral-200/80 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors relative"
+        title="Refresh Status"
         :disabled="isChecking"
         @click="checkHealth"
       >
         <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': isChecking }" />
       </button>
 
-      <!-- Divider -->
-      <div class="h-8 w-px mx-1" style="background:#2e1c0d;"></div>
-
-      <!-- User avatar + info -->
-      <div class="flex items-center gap-2.5">
-        <div
-          class="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shadow-lg"
-          style="background:linear-gradient(135deg,#e8882a,#c46010);"
-        >
+      <!-- Donezo User Profile Capsule -->
+      <div class="flex items-center gap-3 pl-1 pr-3 py-1 rounded-full bg-white border border-neutral-200/80 shadow-xs">
+        <!-- Avatar Circle -->
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xs"
+          style="background: linear-gradient(135deg, #16533a 0%, #144e35 100%);">
           {{ userInitials }}
         </div>
-        <div class="hidden md:block text-left">
-          <div class="text-xs font-semibold leading-tight" style="color:#f0e6d8;">
-            {{ auth.user.value?.username || 'Administrator' }}
+
+        <!-- Name & Email (Totok Michael style) -->
+        <div class="hidden sm:block text-left leading-tight">
+          <div class="text-xs font-semibold text-neutral-900">
+            {{ auth.user.value?.username || 'Totok Michael' }}
           </div>
-          <div class="text-[10px] leading-tight" style="color:#6a5545;">
-            {{ auth.user.value?.email || 'admin@kyodb' }}
+          <div class="text-[10px] text-neutral-400">
+            {{ auth.user.value?.email || 'admin@kyodb.local' }}
           </div>
         </div>
 
-        <!-- Logout -->
         <button
-          class="p-1.5 rounded-lg transition-colors"
-          style="color:#9a8070;"
+          class="text-neutral-400 hover:text-rose-600 p-1 rounded-full hover:bg-neutral-100 transition-colors ml-1"
           title="Sign Out"
           @click="handleLogout"
         >
-          <LogOut class="w-4 h-4 hover:text-red-400" />
+          <LogOut class="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
@@ -103,51 +98,45 @@ onMounted(async () => {
 })
 
 const userInitials = computed(() => {
-  const u = auth.user.value?.username || 'Admin'
+  const u = auth.user.value?.username || 'TM'
   return u.slice(0, 2).toUpperCase()
 })
 
 const tidbStatusText = computed(() => {
-  if (!health.value?.tidb) return 'Checking...'
+  if (!health.value?.tidb) return 'Checking'
   if (health.value.tidb.connected) return `${health.value.tidb.latencyMs ?? 0}ms`
-  if (health.value.tidb.statusText === 'Not Configured') return 'No Config'
+  if (health.value.tidb.statusText === 'Not Configured') return 'Offline'
   return 'Offline'
 })
 
-const tidbStyleObj = computed(() => {
-  if (health.value?.tidb?.connected)
-    return { background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.25)', color: '#86efac' }
-  if (health.value?.tidb?.statusText === 'Not Configured')
-    return { background: 'rgba(232,136,42,0.08)', border: '1px solid rgba(232,136,42,0.25)', color: '#fbbf6a' }
-  return { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5' }
+const tidbClass = computed(() => {
+  if (health.value?.tidb?.connected) return 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
+  return 'bg-neutral-100 border-neutral-200 text-neutral-700'
 })
 
-const tidbDotClasses = computed(() => {
-  if (health.value?.tidb?.connected) return 'bg-green-400 animate-pulse'
-  if (health.value?.tidb?.statusText === 'Not Configured') return 'bg-amber-400'
-  return 'bg-red-400'
+const tidbDotClass = computed(() => {
+  if (health.value?.tidb?.connected) return 'bg-emerald-500 animate-pulse'
+  return 'bg-amber-400'
 })
 
 const r2StatusText = computed(() => {
-  if (!health.value?.r2) return 'Checking...'
+  if (!health.value?.r2) return 'Checking'
   if (health.value.r2.connected) return `${health.value.r2.latencyMs ?? 0}ms`
-  if (health.value.r2.statusText === 'Not Configured') return 'No Config'
+  if (health.value.r2.statusText === 'Not Configured') return 'Offline'
   return 'Offline'
 })
 
-const r2StyleObj = computed(() => {
-  if (health.value?.r2?.connected)
-    return { background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.25)', color: '#86efac' }
-  if (health.value?.r2?.statusText === 'Not Configured')
-    return { background: 'rgba(232,136,42,0.08)', border: '1px solid rgba(232,136,42,0.25)', color: '#fbbf6a' }
-  return { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5' }
+const r2Class = computed(() => {
+  if (health.value?.r2?.connected) return 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
+  return 'bg-neutral-100 border-neutral-200 text-neutral-700'
 })
 
-const r2DotClasses = computed(() => {
-  if (health.value?.r2?.connected) return 'bg-green-400 animate-pulse'
-  if (health.value?.r2?.statusText === 'Not Configured') return 'bg-amber-400'
-  return 'bg-red-400'
+const r2DotClass = computed(() => {
+  if (health.value?.r2?.connected) return 'bg-emerald-500 animate-pulse'
+  return 'bg-amber-400'
 })
 
-const handleLogout = async () => { await auth.logout() }
+const handleLogout = async () => {
+  await auth.logout()
+}
 </script>

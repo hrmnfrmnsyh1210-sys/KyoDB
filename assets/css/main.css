@@ -2,109 +2,268 @@
 @import "@nuxt/ui";
 
 /* ═══════════════════════════════════════════════════════
-   KyoDB – Warm Amber Dark Theme
-   Inspired by premium financial/data dashboard design
-   Background: deep warm brown/charcoal
-   Accent: amber-orange (#e8882a)
+   KyoDB – Donezo Minimalist Light SaaS Theme
+   Clean off-white canvas, crisp white cards, 
+   Deep Forest Green (#144e35) & Mint accents.
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* Core backgrounds */
-  --kyodb-bg:          #130d07;
-  --kyodb-bg-card:     #1c1208;
-  --kyodb-bg-elevated: #231509;
-  --kyodb-bg-hover:    #2a1a0c;
+  /* Canvas & backgrounds */
+  --kyodb-canvas:      #f4f5f6;
+  --kyodb-card:        #ffffff;
+  --kyodb-card-muted:  #f8f9fa;
+  --kyodb-card-hover:  #fafafa;
 
   /* Borders */
-  --kyodb-border:      #2e1c0d;
-  --kyodb-border-soft: #3a2410;
+  --kyodb-border:      #e5e7eb;
+  --kyodb-border-soft: #f0f1f3;
 
-  /* Accent – amber orange */
-  --kyodb-amber:       #e8882a;
-  --kyodb-amber-light: #f9a84a;
-  --kyodb-amber-glow:  rgba(232,136,42,0.15);
-  --kyodb-amber-bg:    rgba(232,136,42,0.08);
+  /* Forest Green & Emerald Accents */
+  --kyodb-forest:       #144e35;
+  --kyodb-forest-hover: #0f3d2a;
+  --kyodb-forest-light: #1b5e3f;
+  --kyodb-mint:         #34d399;
+  --kyodb-mint-soft:    #ecfdf5;
+  --kyodb-mint-text:    #065f46;
 
-  /* Text */
-  --kyodb-text:        #f0e6d8;
-  --kyodb-text-muted:  #9a8070;
-  --kyodb-text-faint:  #6a5545;
+  /* Typography */
+  --kyodb-text-dark:    #111827;
+  --kyodb-text-body:    #4b5563;
+  --kyodb-text-muted:   #9ca3af;
+  --kyodb-text-faint:   #d1d5db;
+
+  /* Legacy variable mappings for complete backward compatibility */
+  --kyodb-bg:          #f4f5f6;
+  --kyodb-bg-card:     #ffffff;
+  --kyodb-bg-elevated: #f8f9fa;
+  --kyodb-bg-hover:    #f3f4f6;
+  --kyodb-border:      #e5e7eb;
+  --kyodb-border-soft: #f0f1f3;
+  --kyodb-amber:       #144e35;
+  --kyodb-amber-light: #1b5e3f;
+  --kyodb-amber-glow:  rgba(20, 78, 53, 0.1);
+  --kyodb-amber-bg:    rgba(20, 78, 53, 0.06);
+  --kyodb-text:        #111827;
+  --kyodb-text-muted:  #6b7280;
+  --kyodb-text-faint:  #9ca3af;
+}
+
+/* Base Body Styling */
+body {
+  background-color: var(--kyodb-canvas);
+  color: var(--kyodb-text-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--kyodb-bg); }
-::-webkit-scrollbar-thumb { background: var(--kyodb-border-soft); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--kyodb-amber); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
 /* Selection */
-::selection { background: var(--kyodb-amber-glow); color: var(--kyodb-text); }
+::selection { background: #d1fae5; color: #065f46; }
 
-/* Smooth transitions globally */
+/* Smooth transitions */
 * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
 
-/* Glow helpers */
-.amber-glow {
-  box-shadow: 0 0 24px rgba(232,136,42,0.25), 0 0 8px rgba(232,136,42,0.12);
-}
-.amber-glow-sm {
-  box-shadow: 0 0 12px rgba(232,136,42,0.18);
-}
-
-/* Warm gradient card */
-.card-warm {
-  background: linear-gradient(135deg, #1c1208 0%, #1a1007 60%, #180e06 100%);
+/* Donezo Card Styles */
+.donezo-card {
+  background: #ffffff;
   border: 1px solid var(--kyodb-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-/* Shimmer skeleton */
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.skeleton-warm {
-  background: linear-gradient(90deg, #1c1208 25%, #2a1a0c 50%, #1c1208 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
+.donezo-card-forest {
+  background: linear-gradient(145deg, #16533a 0%, #144e35 60%, #0f3d2a 100%);
+  border-radius: 1.25rem;
+  color: #ffffff;
 }
 
-/* Amber gradient button */
-.btn-amber {
-  background: linear-gradient(135deg, #e8882a 0%, #d4701a 100%);
-  color: white;
-  font-weight: 600;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(232,136,42,0.3);
-  transition: all 0.2s;
+/* Legacy card mappings */
+.card-amber,
+.card-warm,
+.panel-warm {
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  color: #111827;
 }
-.btn-amber:hover {
-  background: linear-gradient(135deg, #f9a84a 0%, #e8882a 100%);
-  box-shadow: 0 6px 20px rgba(232,136,42,0.4);
-  transform: translateY(-1px);
+
+.text-warm {
+  color: #111827 !important;
 }
-.btn-amber:disabled {
+.text-muted-warm {
+  color: #6b7280 !important;
+}
+.text-faint-warm {
+  color: #9ca3af !important;
+}
+.text-amber-accent {
+  color: #144e35 !important;
+}
+.input-warm {
+  background: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+.input-warm:focus {
+  border-color: #144e35 !important;
+  background: #ffffff !important;
+}
+
+/* Pill & Button Helpers */
+.btn-forest {
+  background: var(--kyodb-forest);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(20, 78, 53, 0.15);
+}
+.btn-forest:hover {
+  background: var(--kyodb-forest-hover);
+  box-shadow: 0 3px 8px rgba(20, 78, 53, 0.25);
+  transform: translateY(-0.5px);
+}
+.btn-forest:disabled {
   opacity: 0.5;
   transform: none;
-  box-shadow: none;
+  cursor: not-allowed;
 }
 
-/* Sidebar icon-only style */
-.sidebar-icon-btn {
+.btn-white-pill {
+  background: #ffffff;
+  color: var(--kyodb-text-dark);
+  border: 1px solid var(--kyodb-border);
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+.btn-white-pill:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Legacy btn-amber fallback remapped to forest green pill */
+.btn-amber {
+  background: var(--kyodb-forest) !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+  transition: all 0.15s !important;
+  box-shadow: 0 1px 2px rgba(20, 78, 53, 0.15) !important;
+}
+.btn-amber:hover {
+  background: var(--kyodb-forest-hover) !important;
+}
+
+/* Circular Arrow Icon Button (↗) */
+.circle-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  color: var(--kyodb-text-muted);
-  transition: all 0.18s;
+  border: 1px solid var(--kyodb-border);
+  color: var(--kyodb-text-body);
+  background: #ffffff;
+  transition: all 0.15s;
 }
-.sidebar-icon-btn:hover {
-  background: var(--kyodb-bg-hover);
-  color: var(--kyodb-text);
+.circle-arrow-btn:hover {
+  background: #f3f4f6;
+  color: var(--kyodb-text-dark);
 }
-.sidebar-icon-btn.active {
-  background: var(--kyodb-amber-bg);
-  color: var(--kyodb-amber);
-  box-shadow: 0 0 0 1px var(--kyodb-border-soft);
+
+.circle-arrow-btn-white {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transition: all 0.15s;
+}
+.circle-arrow-btn-white:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Diagonal Striped Bar Pattern (like the reference chart) */
+.striped-bar {
+  background: repeating-linear-gradient(
+    -45deg,
+    #e2e8f0,
+    #e2e8f0 4px,
+    #f8fafc 4px,
+    #f8fafc 8px
+  );
+  border: 1px solid #e2e8f0;
+}
+
+.striped-bar-mint {
+  background: repeating-linear-gradient(
+    -45deg,
+    #6ee7b7,
+    #6ee7b7 4px,
+    #a7f3d0 4px,
+    #a7f3d0 8px
+  );
+}
+
+/* Shimmer Skeleton for light theme */
+@keyframes shimmer-light {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-warm,
+.skeleton-light {
+  background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 50%, #f1f3f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer-light 1.6s infinite;
+}
+
+/* Sidebar Nav Item Styling */
+.donezo-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.15s;
+}
+.donezo-nav-item:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+.donezo-nav-item.active {
+  color: #111827;
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+.donezo-nav-item.active .nav-icon {
+  color: #144e35;
+}
+
+/* Wavy fluid background texture for time tracker / dark widget */
+.wavy-tracker-card {
+  background: radial-gradient(circle at 100% 100%, #1a5d3f 0%, #0c2a1c 80%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+}
+.wavy-tracker-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background: radial-gradient(ellipse at 50% 50%, #34d399 0%, transparent 70%);
 }

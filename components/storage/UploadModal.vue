@@ -2,28 +2,28 @@
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
     <!-- Backdrop -->
     <div
-      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+      class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm transition-opacity"
       @click="handleClose"
     ></div>
 
     <!-- Modal Box -->
-    <div class="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-[#0c121e] shadow-2xl shadow-black/60 overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="relative w-full max-w-xl rounded-2xl border border-[#2e1c0d] bg-[#1a1007] shadow-2xl shadow-black/60 overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 px-6 py-4">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
         <div class="flex items-center gap-2.5">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e8882a]/10 border border-[#e8882a]/20 text-[#e8882a]">
             <UploadCloud class="h-4 w-4" />
           </div>
           <div>
-            <h3 class="text-base font-semibold text-white">Upload Files to Cloudflare R2</h3>
-            <p class="text-xs text-slate-400">
+            <h3 class="text-base font-semibold text-warm">Upload Files to Cloudflare R2</h3>
+            <p class="text-xs text-muted-warm">
               Direct-to-R2 presigned upload engine
             </p>
           </div>
         </div>
 
         <button
-          class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+          class="p-1 rounded-lg text-muted-warm hover:text-warm hover:bg-[#231509]/70 transition-colors"
           :disabled="isUploading"
           @click="handleClose"
         >
@@ -32,20 +32,20 @@
       </div>
 
       <!-- Scope / Destination Banner -->
-      <div class="bg-slate-900/60 border-b border-slate-800/60 px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-1.5 text-slate-300">
-          <Folder class="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-          <span class="text-slate-400">Target Folder:</span>
-          <span class="font-mono text-cyan-300 font-medium">/{{ currentPrefix || 'root' }}</span>
+      <div class="bg-[#1c1208] border-b border-[#2e1c0d]/60 px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-1.5 text-muted-warm">
+          <Folder class="h-3.5 w-3.5 text-amber-accent shrink-0" />
+          <span class="text-muted-warm">Target Folder:</span>
+          <span class="font-mono text-amber-accent font-medium">/{{ currentPrefix || 'root' }}</span>
         </div>
 
         <!-- Project Selector if available -->
         <div v-if="projects.length > 0" class="flex items-center gap-2">
-          <span class="text-slate-400">Project Scope:</span>
+          <span class="text-muted-warm">Project Scope:</span>
           <select
             v-model="selectedProjectId"
             :disabled="isUploading"
-            class="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white focus:border-cyan-500 focus:outline-none"
+            class="rounded-lg border border-[#3a2410] bg-[#231509] px-2.5 py-1 text-xs text-warm focus:border-[#e8882a] focus:outline-none"
           >
             <option :value="null">None (Global)</option>
             <option v-for="proj in projects" :key="proj.id" :value="proj.id">
@@ -60,7 +60,7 @@
         <!-- Drag & Drop Zone -->
         <div
           class="relative rounded-2xl border-2 border-dashed transition-all p-8 text-center cursor-pointer"
-          :class="isDragging ? 'border-teal-400 bg-teal-500/10' : 'border-slate-700 hover:border-slate-500 bg-slate-900/30'"
+          :class="isDragging ? 'border-[#e8882a] bg-[#e8882a]/10' : 'border-[#3a2410] hover:border-[#6a5545] bg-[#1c1208]/30'"
           @dragover.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @drop.prevent="handleDrop"
@@ -74,24 +74,24 @@
             @change="handleFileSelect"
           />
 
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 mb-3">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#e8882a]/10 text-[#e8882a] border border-[#e8882a]/20 mb-3">
             <UploadCloud class="h-6 w-6" />
           </div>
 
-          <h4 class="text-sm font-semibold text-white">
+          <h4 class="text-sm font-semibold text-warm">
             Choose files or drag & drop here
           </h4>
-          <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+          <p class="text-xs text-muted-warm mt-1 max-w-sm mx-auto">
             Images, documents, videos, and archives are uploaded directly to Cloudflare R2 via pre-signed S3 URLs.
           </p>
-          <span class="mt-3 inline-block rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 border border-slate-700 hover:bg-slate-750">
+          <span class="mt-3 inline-block rounded-lg bg-[#2a1a0c] px-3 py-1.5 text-xs font-medium text-warm border border-[#3a2410] hover:bg-[#3a2410]">
             Browse files
           </span>
         </div>
 
         <!-- File Queue List -->
         <div v-if="fileQueue.length > 0" class="space-y-2.5">
-          <div class="flex items-center justify-between text-xs text-slate-400 pt-2">
+          <div class="flex items-center justify-between text-xs text-muted-warm pt-2">
             <span>Selected Files ({{ fileQueue.length }})</span>
             <button
               v-if="!isUploading && fileQueue.length > 0"
@@ -106,15 +106,15 @@
             <div
               v-for="(item, idx) in fileQueue"
               :key="idx"
-              class="rounded-xl border border-slate-800 bg-slate-900/80 p-3 space-y-2"
+              class="rounded-xl border border-[#2e1c0d] bg-[#231509] p-3 space-y-2"
             >
               <div class="flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <File class="h-4 w-4 text-cyan-400 shrink-0" />
-                  <span class="font-medium text-white truncate" :title="item.file.name">
+                  <File class="h-4 w-4 text-amber-accent shrink-0" />
+                  <span class="font-medium text-warm truncate" :title="item.file.name">
                     {{ item.file.name }}
                   </span>
-                  <span class="text-[11px] text-slate-500 shrink-0">
+                  <span class="text-[11px] text-faint-warm shrink-0">
                     ({{ formatBytes(item.file.size) }})
                   </span>
                 </div>
@@ -123,13 +123,13 @@
                 <div class="flex items-center gap-2 shrink-0">
                   <span
                     v-if="item.status === 'pending'"
-                    class="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] text-slate-400 font-mono"
+                    class="rounded-full bg-[#2a1a0c] px-2 py-0.5 text-[10px] text-muted-warm font-mono"
                   >
                     Pending
                   </span>
                   <span
                     v-else-if="item.status === 'uploading'"
-                    class="flex items-center gap-1 text-[10px] text-cyan-400 font-mono"
+                    class="flex items-center gap-1 text-[10px] text-amber-accent font-mono"
                   >
                     <Loader2 class="h-3 w-3 animate-spin" />
                     {{ item.progress }}%
@@ -153,7 +153,7 @@
                   <!-- Remove item button if pending -->
                   <button
                     v-if="item.status === 'pending' && !isUploading"
-                    class="p-0.5 text-slate-500 hover:text-red-400 transition-colors"
+                    class="p-0.5 text-faint-warm hover:text-red-400 transition-colors"
                     @click="removeItem(idx)"
                   >
                     <X class="h-3.5 w-3.5" />
@@ -164,11 +164,11 @@
               <!-- Progress bar for uploading / completed -->
               <div
                 v-if="item.status === 'uploading' || item.status === 'completed'"
-                class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"
+                class="w-full bg-[#2a1a0c] h-1.5 rounded-full overflow-hidden"
               >
                 <div
                   class="h-full transition-all duration-200"
-                  :class="item.status === 'completed' ? 'bg-emerald-500' : 'bg-gradient-to-r from-teal-500 to-cyan-500'"
+                  :class="item.status === 'completed' ? 'bg-emerald-500' : 'bg-gradient-to-r from-[#e8882a] to-[#f9a84a]'"
                   :style="{ width: `${item.progress}%` }"
                 ></div>
               </div>
@@ -178,8 +178,8 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex items-center justify-between border-t border-slate-800/80 px-6 py-4 bg-slate-900/40">
-        <div class="text-xs text-slate-400">
+      <div class="flex items-center justify-between border-t border-[#2e1c0d] px-6 py-4 bg-[#1c1208]">
+        <div class="text-xs text-muted-warm">
           <span v-if="allCompleted && fileQueue.length > 0" class="text-emerald-400 flex items-center gap-1">
             <Check class="h-3.5 w-3.5" /> All files uploaded successfully!
           </span>
@@ -194,7 +194,7 @@
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors"
+            class="rounded-xl border border-[#3a2410] bg-[#2a1a0c] px-4 py-2 text-xs font-semibold text-muted-warm hover:bg-[#3a2410] transition-colors"
             :disabled="isUploading"
             @click="handleClose"
           >
@@ -204,7 +204,7 @@
           <button
             v-if="!allCompleted"
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-teal-500/20 hover:from-teal-500 hover:to-cyan-500 transition-all disabled:opacity-50"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#e8882a] to-[#c46a18] px-4 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:from-[#f9a84a] hover:to-[#e8882a] transition-all disabled:opacity-50"
             :disabled="isUploading || fileQueue.length === 0"
             @click="startUpload"
           >

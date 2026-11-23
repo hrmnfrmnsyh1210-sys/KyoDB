@@ -2,30 +2,30 @@
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
     <!-- Backdrop -->
     <div
-      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+      class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm transition-opacity"
       @click="$emit('close')"
     ></div>
 
     <!-- Modal Box -->
-    <div class="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-[#0c121e] shadow-2xl shadow-black/60 overflow-hidden">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#2e1c0d] bg-[#1a1007] shadow-2xl shadow-black/60 overflow-hidden">
       <!-- Modal Header -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 px-6 py-4">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
         <div class="flex items-center gap-2.5">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e8882a]/10 border border-[#e8882a]/20 text-amber-accent">
             <FolderKanban class="h-4 w-4" />
           </div>
           <div>
-            <h3 class="text-base font-semibold text-white">
+            <h3 class="text-base font-semibold text-warm">
               {{ isEditing ? 'Edit Project' : 'Create New Project' }}
             </h3>
-            <p class="text-xs text-slate-400">
+            <p class="text-xs text-muted-warm">
               {{ isEditing ? 'Update project metadata and status' : 'Set up a new isolated project, database & storage scope' }}
             </p>
           </div>
         </div>
 
         <button
-          class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+          class="p-1 rounded-lg text-muted-warm hover:text-warm hover:bg-[#231509]/70 transition-colors"
           @click="$emit('close')"
         >
           <X class="h-4 w-4" />
@@ -42,15 +42,15 @@
       <form class="p-6 space-y-4" @submit.prevent="handleSubmit">
         <!-- Project Name -->
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1.5">
-            Project Name <span class="text-cyan-400">*</span>
+          <label class="block text-xs font-medium text-muted-warm mb-1.5">
+            Project Name <span class="text-amber-accent">*</span>
           </label>
           <input
             v-model="form.name"
             type="text"
             required
             placeholder="e.g. Acme SaaS Platform"
-            class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
+            class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2.5 text-xs text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all"
             @input="handleNameInput"
           />
         </div>
@@ -58,10 +58,10 @@
         <!-- Project Slug -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-medium text-slate-300">
-              Project Slug <span class="text-cyan-400">*</span>
+            <label class="text-xs font-medium text-muted-warm">
+              Project Slug <span class="text-amber-accent">*</span>
             </label>
-            <span class="text-[10px] text-slate-500 font-mono">Unique URL identifier</span>
+            <span class="text-[10px] text-faint-warm font-mono">Unique URL identifier</span>
           </div>
           <div class="relative">
             <input
@@ -70,34 +70,34 @@
               required
               :disabled="isEditing"
               placeholder="e.g. acme-saas-platform"
-              class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 py-2.5 text-xs font-mono text-cyan-300 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all disabled:opacity-50 disabled:bg-slate-950"
+              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2.5 text-xs font-mono text-amber-accent placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all disabled:opacity-50 disabled:bg-[#120a04]"
               @input="isCustomSlug = true"
             />
           </div>
-          <p class="mt-1 text-[11px] text-slate-500">
-            Preview scope: <code class="text-slate-400 font-mono">projects/{{ form.slug || '{slug}' }}/</code>
+          <p class="mt-1 text-[11px] text-faint-warm">
+            Preview scope: <code class="text-muted-warm font-mono">projects/{{ form.slug || '{slug}' }}/</code>
           </p>
         </div>
 
         <!-- Description -->
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1.5">
-            Description <span class="text-slate-500">(Optional)</span>
+          <label class="block text-xs font-medium text-muted-warm mb-1.5">
+            Description <span class="text-faint-warm">(Optional)</span>
           </label>
           <textarea
             v-model="form.description"
             rows="2"
             placeholder="Brief overview of this project..."
-            class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all resize-none"
+            class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2.5 text-xs text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all resize-none"
           ></textarea>
         </div>
 
         <!-- Status -->
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1.5">Status</label>
+          <label class="block text-xs font-medium text-muted-warm mb-1.5">Status</label>
           <select
             v-model="form.status"
-            class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
+            class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2.5 text-xs text-warm focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all"
           >
             <option value="active">Active (Full operational access)</option>
             <option value="archived">Archived (Read-only / dormant)</option>
@@ -106,89 +106,89 @@
         </div>
 
         <!-- Database Association Option (Creation Mode Only) -->
-        <div v-if="!isEditing" class="pt-2 border-t border-slate-800/80 space-y-3">
+        <div v-if="!isEditing" class="pt-2 border-t border-[#2e1c0d] space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-200">TiDB Database Association</span>
-            <span class="text-[10px] text-blue-400 font-medium">TiDB Cloud Cluster</span>
+            <span class="text-xs font-medium text-warm">TiDB Database Association</span>
+            <span class="text-[10px] text-amber-accent font-medium">TiDB Cloud Cluster</span>
           </div>
 
           <div class="grid grid-cols-1 gap-2">
             <!-- None -->
             <label
               class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all text-xs"
-              :class="form.databaseOption === 'none' ? 'border-cyan-500/60 bg-cyan-950/20 text-white' : 'border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700'"
+              :class="form.databaseOption === 'none' ? 'border-[#e8882a]/60 bg-[#e8882a]/10 text-warm' : 'border-[#2e1c0d] bg-[#1c1208] text-muted-warm hover:border-[#3a2410]'"
             >
               <input
                 v-model="form.databaseOption"
                 type="radio"
                 value="none"
-                class="accent-cyan-400"
+                class="accent-[#e8882a]"
               />
               <div>
-                <span class="font-medium text-slate-200 block">No database</span>
-                <span class="text-[11px] text-slate-500">Create project first, attach database later</span>
+                <span class="font-medium text-warm block">No database</span>
+                <span class="text-[11px] text-faint-warm">Create project first, attach database later</span>
               </div>
             </label>
 
             <!-- Create New Logical Database -->
             <label
               class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all text-xs"
-              :class="form.databaseOption === 'create_new' ? 'border-cyan-500/60 bg-cyan-950/20 text-white' : 'border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700'"
+              :class="form.databaseOption === 'create_new' ? 'border-[#e8882a]/60 bg-[#e8882a]/10 text-warm' : 'border-[#2e1c0d] bg-[#1c1208] text-muted-warm hover:border-[#3a2410]'"
             >
               <input
                 v-model="form.databaseOption"
                 type="radio"
                 value="create_new"
-                class="accent-cyan-400"
+                class="accent-[#e8882a]"
               />
               <div>
-                <span class="font-medium text-slate-200 block">Create new logical database on TiDB Cloud</span>
-                <span class="text-[11px] text-slate-500">Auto-provisions a fresh logical database in the cluster</span>
+                <span class="font-medium text-warm block">Create new logical database on TiDB Cloud</span>
+                <span class="text-[11px] text-faint-warm">Auto-provisions a fresh logical database in the cluster</span>
               </div>
             </label>
 
             <!-- Attach Existing Database -->
             <label
               class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all text-xs"
-              :class="form.databaseOption === 'attach_existing' ? 'border-cyan-500/60 bg-cyan-950/20 text-white' : 'border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700'"
+              :class="form.databaseOption === 'attach_existing' ? 'border-[#e8882a]/60 bg-[#e8882a]/10 text-warm' : 'border-[#2e1c0d] bg-[#1c1208] text-muted-warm hover:border-[#3a2410]'"
             >
               <input
                 v-model="form.databaseOption"
                 type="radio"
                 value="attach_existing"
-                class="accent-cyan-400"
+                class="accent-[#e8882a]"
               />
               <div>
-                <span class="font-medium text-slate-200 block">Attach existing cluster database</span>
-                <span class="text-[11px] text-slate-500">Link an existing logical database already in TiDB</span>
+                <span class="font-medium text-warm block">Attach existing cluster database</span>
+                <span class="text-[11px] text-faint-warm">Link an existing logical database already in TiDB</span>
               </div>
             </label>
           </div>
 
           <!-- Dynamic Database Name Input -->
           <div v-if="form.databaseOption === 'create_new'" class="mt-2 space-y-1">
-            <label class="block text-[11px] font-medium text-slate-300">
-              New Database Identifier <span class="text-cyan-400">*</span>
+            <label class="block text-[11px] font-medium text-muted-warm">
+              New Database Identifier <span class="text-amber-accent">*</span>
             </label>
             <input
               v-model="form.databaseName"
               type="text"
               placeholder="e.g. acme_saas_db"
-              class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-mono text-cyan-300 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
+              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2 text-xs font-mono text-amber-accent placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all"
             />
-            <p class="text-[10px] text-slate-500">
+            <p class="text-[10px] text-faint-warm">
               Only alphanumeric characters and underscores. Max 64 characters.
             </p>
           </div>
 
           <!-- Select Existing Database -->
           <div v-if="form.databaseOption === 'attach_existing'" class="mt-2 space-y-1">
-            <label class="block text-[11px] font-medium text-slate-300">
-              Select Existing Database <span class="text-cyan-400">*</span>
+            <label class="block text-[11px] font-medium text-muted-warm">
+              Select Existing Database <span class="text-amber-accent">*</span>
             </label>
             <select
               v-model="form.databaseName"
-              class="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-xs font-mono text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all"
+              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2 text-xs font-mono text-amber-accent focus:border-[#e8882a] focus:outline-none focus:ring-1 focus:ring-[#e8882a] transition-all"
             >
               <option value="" disabled>-- Select database --</option>
               <option
@@ -204,10 +204,10 @@
         </div>
 
         <!-- Modal Actions -->
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#2e1c0d]">
           <button
             type="button"
-            class="rounded-xl border border-slate-700/80 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            class="rounded-xl border border-[#3a2410] px-4 py-2 text-xs font-medium text-muted-warm hover:bg-[#2a1a0c] hover:text-warm transition-colors"
             @click="$emit('close')"
           >
             Cancel
@@ -215,7 +215,7 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-cyan-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex items-center gap-2 rounded-xl btn-amber px-5 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:from-[#f9a84a] hover:to-[#e8882a] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw v-if="isSubmitting" class="h-3.5 w-3.5 animate-spin" />
             <span>{{ isEditing ? 'Save Changes' : 'Create Project' }}</span>

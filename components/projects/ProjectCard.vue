@@ -1,15 +1,15 @@
 <template>
-  <div class="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-[#0f172a]/70 p-5 backdrop-blur transition-all duration-200 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/5">
+  <div class="donezo-card p-5 group flex flex-col justify-between hover:shadow-md transition-all">
     <div>
-      <!-- Header: Title & Status -->
+      <!-- Header: Title & Status Badge -->
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <h3 class="truncate text-base font-semibold text-white group-hover:text-cyan-300 transition-colors">
+            <h3 class="truncate text-sm font-bold text-neutral-900 group-hover:text-[#144e35] transition-colors">
               {{ project.name }}
             </h3>
             <span
-              class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase border"
+              class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase border"
               :class="statusBadgeClasses"
             >
               <span class="w-1.5 h-1.5 rounded-full mr-1" :class="statusDotClasses"></span>
@@ -19,31 +19,31 @@
 
           <!-- Slug pill with copy -->
           <div class="mt-1 flex items-center gap-1.5">
-            <code class="text-[11px] font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-800/40 px-1.5 py-0.5 rounded">
+            <code class="text-[11px] font-mono text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
               {{ project.slug }}
             </code>
             <button
-              class="p-0.5 text-slate-500 hover:text-slate-300 transition-colors"
+              class="p-0.5 text-neutral-400 hover:text-neutral-700 transition-colors"
               :title="copied ? 'Copied!' : 'Copy slug'"
               @click.stop="copySlug"
             >
-              <Check v-if="copied" class="h-3 w-3 text-emerald-400" />
+              <Check v-if="copied" class="h-3 w-3 text-emerald-600" />
               <Copy v-else class="h-3 w-3" />
             </button>
           </div>
         </div>
 
-        <!-- Action menu buttons -->
-        <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+        <!-- Action buttons -->
+        <div class="flex items-center gap-1">
           <button
-            class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/70 rounded-lg transition-colors"
+            class="p-1.5 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
             title="Edit Project"
             @click.stop="$emit('edit', project)"
           >
             <Edit3 class="h-3.5 w-3.5" />
           </button>
           <button
-            class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            class="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
             title="Delete Project"
             @click.stop="$emit('delete', project)"
           >
@@ -53,52 +53,52 @@
       </div>
 
       <!-- Description -->
-      <p class="mt-3 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+      <p class="mt-3 text-xs text-neutral-500 line-clamp-2 leading-relaxed">
         {{ project.description || 'No description provided for this project.' }}
       </p>
 
       <!-- Associated Resources Metrics -->
       <div class="mt-4 grid grid-cols-2 gap-2">
         <!-- TiDB Databases Count -->
-        <div class="rounded-lg bg-slate-900/60 border border-slate-800/70 p-2.5">
-          <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-            <Database class="h-3.5 w-3.5 text-blue-400" />
-            <span>TiDB Databases</span>
+        <div class="rounded-xl bg-neutral-50 border border-neutral-200/80 p-2.5">
+          <div class="flex items-center gap-1.5 text-[11px] text-neutral-500">
+            <Database class="h-3.5 w-3.5 text-[#144e35]" />
+            <span>Databases</span>
           </div>
           <div class="mt-1 flex items-baseline gap-1">
-            <span class="text-base font-bold text-white font-mono">
+            <span class="text-base font-bold text-neutral-900 font-mono">
               {{ project.databasesCount ?? 0 }}
             </span>
-            <span class="text-[10px] text-slate-500">attached</span>
+            <span class="text-[10px] text-neutral-400">attached</span>
           </div>
         </div>
 
         <!-- R2 Storage Usage -->
-        <div class="rounded-lg bg-slate-900/60 border border-slate-800/70 p-2.5">
-          <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-            <HardDrive class="h-3.5 w-3.5 text-violet-400" />
+        <div class="rounded-xl bg-neutral-50 border border-neutral-200/80 p-2.5">
+          <div class="flex items-center gap-1.5 text-[11px] text-neutral-500">
+            <HardDrive class="h-3.5 w-3.5 text-[#144e35]" />
             <span>R2 Storage</span>
           </div>
           <div class="mt-1 flex items-baseline gap-1">
-            <span class="text-base font-bold text-white font-mono">
+            <span class="text-base font-bold text-neutral-900 font-mono">
               {{ formatBytes(project.storage?.totalBytes) }}
             </span>
-            <span class="text-[10px] text-slate-500">({{ project.storage?.filesCount ?? 0 }} files)</span>
+            <span class="text-[10px] text-neutral-400">({{ project.storage?.filesCount ?? 0 }} files)</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Footer: Created At & Manage Link -->
-    <div class="mt-5 flex items-center justify-between border-t border-slate-800/70 pt-3 text-xs">
-      <div class="flex items-center gap-1 text-[11px] text-slate-500">
+    <div class="mt-5 flex items-center justify-between border-t border-neutral-100 pt-3 text-xs">
+      <div class="flex items-center gap-1 text-[11px] text-neutral-400">
         <Clock class="h-3 w-3" />
         <span>{{ formatDate(project.createdAt) }}</span>
       </div>
 
       <NuxtLink
         :to="`/projects/${project.slug}`"
-        class="inline-flex items-center gap-1 font-medium text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+        class="inline-flex items-center gap-1 font-semibold text-xs text-[#144e35] hover:underline"
       >
         <span>Manage</span>
         <ChevronRight class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -135,9 +135,7 @@ const copySlug = async () => {
   try {
     await navigator.clipboard.writeText(props.project.slug)
     copied.value = true
-    setTimeout(() => {
-      copied.value = false
-    }, 2000)
+    setTimeout(() => { copied.value = false }, 2000)
   } catch (err) {
     console.error('Failed to copy slug:', err)
   }
@@ -146,26 +144,26 @@ const copySlug = async () => {
 const statusBadgeClasses = computed(() => {
   switch (props.project.status) {
     case 'active':
-      return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200'
     case 'archived':
-      return 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+      return 'bg-amber-50 text-amber-700 border-amber-200'
     case 'suspended':
-      return 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+      return 'bg-rose-50 text-rose-700 border-rose-200'
     default:
-      return 'bg-slate-500/10 text-slate-400 border-slate-500/30'
+      return 'bg-neutral-100 text-neutral-600 border-neutral-200'
   }
 })
 
 const statusDotClasses = computed(() => {
   switch (props.project.status) {
     case 'active':
-      return 'bg-emerald-400'
+      return 'bg-emerald-500'
     case 'archived':
-      return 'bg-amber-400'
+      return 'bg-amber-500'
     case 'suspended':
-      return 'bg-rose-400'
+      return 'bg-rose-500'
     default:
-      return 'bg-slate-400'
+      return 'bg-neutral-400'
   }
 })
 

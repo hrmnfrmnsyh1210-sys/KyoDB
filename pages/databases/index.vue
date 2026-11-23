@@ -1,24 +1,24 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-gradient-to-r from-blue-900/30 via-slate-900/40 to-slate-900/60 border border-slate-800/80 p-6 backdrop-blur">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl card-amber border border-[#2e1c0d] p-6 backdrop-blur">
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-2xl font-bold tracking-tight text-white">
-            Database <span class="text-cyan-400">Explorer</span>
+          <h1 class="text-2xl font-bold tracking-tight text-warm">
+            Database <span class="text-amber-accent">Explorer</span>
           </h1>
-          <span class="rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 text-[11px] font-mono text-cyan-400">
+          <span class="rounded-full bg-[#e8882a]/10 border border-[#e8882a]/30 px-2.5 py-0.5 text-[11px] font-mono text-amber-accent">
             Phase 3 Active
           </span>
         </div>
-        <p class="text-xs text-slate-400 mt-1">
+        <p class="text-xs text-muted-warm mt-1">
           Explore TiDB Cloud logical databases, design table schemas, and manage relational rows.
         </p>
       </div>
 
       <div class="flex items-center gap-2">
         <button
-          class="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-medium text-slate-200 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2 text-xs font-medium text-warm hover:bg-[#3a2410] hover:text-warm transition-all shadow-sm"
           :disabled="isLoading"
           @click="refreshAll"
         >
@@ -27,7 +27,7 @@
         </button>
 
         <button
-          class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-cyan-500 transition-all"
+          class="inline-flex items-center gap-1.5 rounded-xl btn-amber px-4 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:from-[#f9a84a] hover:to-[#e8882a] transition-all"
           @click="isCreateDbModalOpen = true"
         >
           <Plus class="h-3.5 w-3.5" />
@@ -41,18 +41,18 @@
       <!-- Left Sidebar: Database & Tables Navigation (4 cols) -->
       <div class="lg:col-span-4 space-y-4">
         <!-- Database Selector Card -->
-        <div class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-4 backdrop-blur space-y-3">
+        <div class="rounded-2xl border border-[#2e1c0d] panel-warm p-4 backdrop-blur space-y-3">
           <div class="flex items-center justify-between">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Database class="h-3.5 w-3.5 text-cyan-400" />
+            <label class="text-xs font-semibold text-muted-warm uppercase tracking-wider flex items-center gap-1.5">
+              <Database class="h-3.5 w-3.5 text-amber-accent" />
               <span>Select Database</span>
             </label>
-            <span class="text-[11px] text-slate-500 font-mono">{{ databases.length }} available</span>
+            <span class="text-[11px] text-faint-warm font-mono">{{ databases.length }} available</span>
           </div>
 
           <select
             v-model="selectedDatabase"
-            class="w-full rounded-xl border border-slate-700/80 bg-slate-900/90 px-3 py-2 text-xs font-mono text-cyan-300 focus:border-cyan-500 focus:outline-none"
+            class="w-full rounded-xl border border-[#3a2410] input-warm px-3 py-2 text-xs font-mono text-amber-accent focus:border-[#e8882a] focus:outline-none"
             @change="handleDatabaseChange"
           >
             <option v-for="db in databases" :key="db.name" :value="db.name">
@@ -77,7 +77,7 @@
             </button>
             <NuxtLink
               :to="`/sql-editor?db=${encodeURIComponent(selectedDatabase)}`"
-              class="ml-auto text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+              class="ml-auto text-[11px] text-amber-accent hover:text-[#f9a84a] flex items-center gap-1"
             >
               <Terminal class="h-3 w-3" />
               <span>Open in SQL Editor</span>
@@ -86,15 +86,15 @@
         </div>
 
         <!-- Tables List Card -->
-        <div class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-4 backdrop-blur space-y-3">
+        <div class="rounded-2xl border border-[#2e1c0d] panel-warm p-4 backdrop-blur space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-              <Table class="h-3.5 w-3.5 text-blue-400" />
+            <h3 class="text-xs font-semibold text-warm uppercase tracking-wider flex items-center gap-1.5">
+              <Table class="h-3.5 w-3.5 text-amber-accent" />
               <span>Tables in {{ selectedDatabase }}</span>
             </h3>
             <button
               v-if="!currentDbInfo?.isSystem"
-              class="inline-flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 font-medium"
+              class="inline-flex items-center gap-1 text-[11px] text-amber-accent hover:text-[#f9a84a] font-medium"
               @click="isCreateTableModalOpen = true"
             >
               <Plus class="h-3 w-3" />
@@ -104,12 +104,12 @@
 
           <!-- Search Tables -->
           <div class="relative">
-            <Search class="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
+            <Search class="absolute left-3 top-2.5 h-3.5 w-3.5 text-faint-warm" />
             <input
               v-model="tableSearchQuery"
               type="text"
               placeholder="Filter tables..."
-              class="w-full rounded-xl border border-slate-700/80 bg-slate-900/90 pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+              class="w-full rounded-xl border border-[#3a2410] input-warm pl-9 pr-3 py-1.5 text-xs text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none"
             />
           </div>
 
@@ -120,20 +120,20 @@
               :key="tbl.name"
               type="button"
               class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-mono transition-all text-left"
-              :class="selectedTable === tbl.name ? 'bg-blue-600/20 text-cyan-300 border border-blue-500/40 shadow-sm' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent'"
+              :class="selectedTable === tbl.name ? 'bg-[#e8882a]/15 text-amber-accent border border-[#e8882a]/40 shadow-sm' : 'text-muted-warm hover:bg-[#231509]/70 hover:text-warm border border-transparent'"
               @click="selectTable(tbl.name)"
             >
               <div class="flex items-center gap-2 truncate">
-                <Table class="h-3.5 w-3.5 shrink-0" :class="selectedTable === tbl.name ? 'text-cyan-400' : 'text-slate-500'" />
+                <Table class="h-3.5 w-3.5 shrink-0" :class="selectedTable === tbl.name ? 'text-amber-accent' : 'text-faint-warm'" />
                 <span class="truncate">{{ tbl.name }}</span>
               </div>
-              <span class="text-[10px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0 font-mono">
+              <span class="text-[10px] text-faint-warm bg-[#231509] px-1.5 py-0.5 rounded border border-[#2e1c0d] shrink-0 font-mono">
                 {{ tbl.rows }}
               </span>
             </button>
           </div>
 
-          <div v-else class="text-center py-8 text-xs text-slate-500">
+          <div v-else class="text-center py-8 text-xs text-faint-warm">
             {{ tableSearchQuery ? 'No tables match query' : 'No tables in this database' }}
           </div>
         </div>
@@ -142,17 +142,17 @@
       <!-- Right Panel: Table Viewer & Editor (8 cols) -->
       <div class="lg:col-span-8 space-y-4">
         <!-- If Table Selected -->
-        <div v-if="selectedTable" class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-6 backdrop-blur space-y-5">
+        <div v-if="selectedTable" class="rounded-2xl border border-[#2e1c0d] panel-warm p-6 backdrop-blur space-y-5">
           <!-- Table Header & Actions -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2e1c0d] pb-4">
             <div>
               <div class="flex items-center gap-2.5">
-                <h2 class="text-xl font-bold font-mono text-white">{{ selectedTable }}</h2>
-                <span class="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">
+                <h2 class="text-xl font-bold font-mono text-warm">{{ selectedTable }}</h2>
+                <span class="text-xs text-muted-warm bg-[#231509] border border-[#2e1c0d] px-2 py-0.5 rounded">
                   {{ currentTableInfo?.engine || 'InnoDB' }}
                 </span>
               </div>
-              <p class="text-xs text-slate-400 mt-1">
+              <p class="text-xs text-muted-warm mt-1">
                 {{ tableData?.totalRows ?? currentTableInfo?.rows ?? 0 }} total rows •
                 {{ formatBytes(currentTableInfo?.dataLengthBytes) }}
               </p>
@@ -161,7 +161,7 @@
             <!-- Action buttons -->
             <div class="flex items-center gap-2">
               <button
-                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700 transition-colors"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-1.5 text-xs font-medium text-warm hover:bg-[#3a2410] transition-colors"
                 @click="exportCsv"
               >
                 <Download class="h-3.5 w-3.5" />
@@ -169,7 +169,7 @@
               </button>
 
               <button
-                class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all"
+                class="inline-flex items-center gap-1.5 rounded-xl btn-amber px-3.5 py-1.5 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:bg-[#f9a84a] transition-all"
                 @click="openInsertRowModal"
               >
                 <Plus class="h-3.5 w-3.5" />
@@ -178,7 +178,7 @@
 
               <button
                 v-if="!currentDbInfo?.isSystem"
-                class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors border border-transparent hover:border-red-500/20"
+                class="p-2 text-muted-warm hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors border border-transparent hover:border-red-500/20"
                 title="Drop Table"
                 @click="openDropTableModal"
               >
@@ -188,17 +188,17 @@
           </div>
 
           <!-- View Tabs (Browse Rows vs Structure) -->
-          <div class="flex items-center gap-2 border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2 border-b border-[#2e1c0d] pb-2">
             <button
               class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
-              :class="activeTab === 'data' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'text-slate-400 hover:text-white'"
+              :class="activeTab === 'data' ? 'bg-[#e8882a]/10 text-amber-accent border border-[#e8882a]/30' : 'text-muted-warm hover:text-warm'"
               @click="activeTab = 'data'"
             >
               Browse Data (Rows)
             </button>
             <button
               class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
-              :class="activeTab === 'structure' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'text-slate-400 hover:text-white'"
+              :class="activeTab === 'structure' ? 'bg-[#e8882a]/10 text-amber-accent border border-[#e8882a]/30' : 'text-muted-warm hover:text-warm'"
               @click="activeTab = 'structure'"
             >
               Table Structure (Schema & Indexes)
@@ -210,8 +210,8 @@
             <!-- Filter & Sort Bar -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
               <div class="flex items-center gap-2">
-                <span class="text-slate-400">Filter:</span>
-                <select v-model="filterCol" class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white">
+                <span class="text-muted-warm">Filter:</span>
+                <select v-model="filterCol" class="rounded-lg border border-[#3a2410] bg-[#231509] px-2 py-1 text-xs text-warm">
                   <option value="">All columns</option>
                   <option v-for="col in tableData?.columns || []" :key="col" :value="col">{{ col }}</option>
                 </select>
@@ -219,11 +219,11 @@
                   v-model="filterVal"
                   type="text"
                   placeholder="Contains..."
-                  class="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white placeholder-slate-500"
+                  class="rounded-lg border border-[#3a2410] bg-[#231509] px-2.5 py-1 text-xs text-warm placeholder-[#6a5545]"
                   @keyup.enter="loadTableRows(1)"
                 />
                 <button
-                  class="rounded-lg bg-slate-800 px-2.5 py-1 text-xs text-slate-300 hover:bg-slate-700"
+                  class="rounded-lg bg-[#2a1a0c] px-2.5 py-1 text-xs text-muted-warm hover:bg-[#3a2410]"
                   @click="loadTableRows(1)"
                 >
                   Filter
@@ -231,11 +231,11 @@
               </div>
 
               <!-- Page Size -->
-              <div class="flex items-center gap-2 text-slate-400">
+              <div class="flex items-center gap-2 text-muted-warm">
                 <span>Show:</span>
                 <select
                   v-model="pageSize"
-                  class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white"
+                  class="rounded-lg border border-[#3a2410] bg-[#231509] px-2 py-1 text-xs text-warm"
                   @change="loadTableRows(1)"
                 >
                   <option :value="25">25</option>
@@ -247,44 +247,44 @@
             </div>
 
             <!-- Data Table Container -->
-            <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 max-h-[500px]">
+            <div class="overflow-x-auto rounded-xl border border-[#2e1c0d] bg-[#120a04]/70 max-h-[500px]">
               <table class="w-full text-left text-xs border-collapse">
-                <thead class="sticky top-0 bg-[#0f172a] border-b border-slate-800 text-slate-400 text-[11px] font-mono uppercase tracking-wider">
+                <thead class="sticky top-0 bg-[#1a1007] border-b border-[#2e1c0d] text-muted-warm text-[11px] font-mono uppercase tracking-wider">
                   <tr>
                     <th class="p-2.5 text-center w-16">Actions</th>
                     <th
                       v-for="col in tableData?.columns || []"
                       :key="col"
-                      class="p-2.5 cursor-pointer hover:text-white"
+                      class="p-2.5 cursor-pointer hover:text-warm"
                       @click="handleSort(col)"
                     >
                       <div class="flex items-center gap-1">
                         <span>{{ col }}</span>
-                        <span v-if="sortColumn === col" class="text-cyan-400">
+                        <span v-if="sortColumn === col" class="text-amber-accent">
                           {{ sortDirection === 'ASC' ? '▲' : '▼' }}
                         </span>
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+                <tbody class="divide-y divide-[#2e1c0d]/60 font-mono text-muted-warm">
                   <tr
                     v-for="(row, idx) in tableData?.rows || []"
                     :key="idx"
-                    class="hover:bg-slate-900/80 transition-colors"
+                    class="hover:bg-[#231509] transition-colors"
                   >
                     <!-- Row Action Buttons -->
                     <td class="p-2.5 text-center whitespace-nowrap">
                       <div class="flex items-center justify-center gap-1.5">
                         <button
-                          class="text-slate-400 hover:text-cyan-400 p-0.5"
+                          class="text-muted-warm hover:text-[#f9a84a] p-0.5"
                           title="Edit row"
                           @click="openEditRowModal(row)"
                         >
                           <Edit3 class="h-3 w-3" />
                         </button>
                         <button
-                          class="text-slate-400 hover:text-red-400 p-0.5"
+                          class="text-muted-warm hover:text-red-400 p-0.5"
                           title="Delete row"
                           @click="confirmDeleteRow(row)"
                         >
@@ -300,13 +300,13 @@
                       class="p-2.5 max-w-xs truncate"
                       :title="String(row[col] ?? '')"
                     >
-                      <span v-if="row[col] === null" class="text-slate-600 italic">NULL</span>
+                      <span v-if="row[col] === null" class="text-faint-warm italic">NULL</span>
                       <span v-else>{{ row[col] }}</span>
                     </td>
                   </tr>
 
                   <tr v-if="!tableData?.rows || tableData.rows.length === 0">
-                    <td :colspan="(tableData?.columns?.length || 1) + 1" class="text-center py-8 text-slate-500">
+                    <td :colspan="(tableData?.columns?.length || 1) + 1" class="text-center py-8 text-faint-warm">
                       Table contains no rows
                     </td>
                   </tr>
@@ -315,22 +315,22 @@
             </div>
 
             <!-- Pagination Bar -->
-            <div class="flex items-center justify-between text-xs text-slate-400 pt-2">
+            <div class="flex items-center justify-between text-xs text-muted-warm pt-2">
               <div>
-                Showing page <strong class="text-white">{{ currentPage }}</strong> of
-                <strong class="text-white">{{ totalPages }}</strong> ({{ tableData?.totalRows ?? 0 }} total records)
+                Showing page <strong class="text-warm">{{ currentPage }}</strong> of
+                <strong class="text-warm">{{ totalPages }}</strong> ({{ tableData?.totalRows ?? 0 }} total records)
               </div>
 
               <div class="flex items-center gap-1.5">
                 <button
-                  class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-slate-200 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                  class="rounded-lg border border-[#3a2410] bg-[#2a1a0c] px-3 py-1.5 text-xs text-warm hover:bg-[#3a2410] disabled:opacity-40 disabled:cursor-not-allowed"
                   :disabled="currentPage <= 1"
                   @click="loadTableRows(currentPage - 1)"
                 >
                   Previous
                 </button>
                 <button
-                  class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-slate-200 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                  class="rounded-lg border border-[#3a2410] bg-[#2a1a0c] px-3 py-1.5 text-xs text-warm hover:bg-[#3a2410] disabled:opacity-40 disabled:cursor-not-allowed"
                   :disabled="currentPage >= totalPages"
                   @click="loadTableRows(currentPage + 1)"
                 >
@@ -344,10 +344,10 @@
           <div v-else-if="activeTab === 'structure'" class="space-y-6">
             <!-- Columns Table -->
             <div>
-              <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Column Definitions</h3>
-              <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+              <h3 class="text-xs font-semibold text-muted-warm uppercase tracking-wider mb-2">Column Definitions</h3>
+              <div class="overflow-x-auto rounded-xl border border-[#2e1c0d] bg-[#120a04]/70">
                 <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-900 border-b border-slate-800 text-slate-400 font-mono text-[11px]">
+                  <thead class="bg-[#231509] border-b border-[#2e1c0d] text-muted-warm font-mono text-[11px]">
                     <tr>
                       <th class="p-2.5">Name</th>
                       <th class="p-2.5">Type</th>
@@ -357,17 +357,17 @@
                       <th class="p-2.5">Extra</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+                  <tbody class="divide-y divide-[#2e1c0d] font-mono text-muted-warm">
                     <tr v-for="col in tableDetails?.columns || []" :key="col.name">
-                      <td class="p-2.5 font-bold text-cyan-300">{{ col.name }}</td>
+                      <td class="p-2.5 font-bold text-amber-accent">{{ col.name }}</td>
                       <td class="p-2.5">{{ col.type }}</td>
                       <td class="p-2.5">{{ col.nullable ? 'YES' : 'NO' }}</td>
                       <td class="p-2.5">
                         <span v-if="col.key === 'PRI'" class="text-amber-400 font-bold">PRIMARY</span>
                         <span v-else>{{ col.key || '-' }}</span>
                       </td>
-                      <td class="p-2.5 text-slate-400">{{ col.default ?? 'NULL' }}</td>
-                      <td class="p-2.5 text-blue-400">{{ col.extra || '-' }}</td>
+                      <td class="p-2.5 text-muted-warm">{{ col.default ?? 'NULL' }}</td>
+                      <td class="p-2.5 text-amber-accent">{{ col.extra || '-' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -376,10 +376,10 @@
 
             <!-- Indexes Table -->
             <div>
-              <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Indexes</h3>
-              <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+              <h3 class="text-xs font-semibold text-muted-warm uppercase tracking-wider mb-2">Indexes</h3>
+              <div class="overflow-x-auto rounded-xl border border-[#2e1c0d] bg-[#120a04]/70">
                 <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-900 border-b border-slate-800 text-slate-400 font-mono text-[11px]">
+                  <thead class="bg-[#231509] border-b border-[#2e1c0d] text-muted-warm font-mono text-[11px]">
                     <tr>
                       <th class="p-2.5">Index Name</th>
                       <th class="p-2.5">Column</th>
@@ -387,10 +387,10 @@
                       <th class="p-2.5">Type</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+                  <tbody class="divide-y divide-[#2e1c0d] font-mono text-muted-warm">
                     <tr v-for="(idx, i) in tableDetails?.indexes || []" :key="i">
-                      <td class="p-2.5 font-bold text-slate-200">{{ idx.name }}</td>
-                      <td class="p-2.5 text-cyan-400">{{ idx.columnName }}</td>
+                      <td class="p-2.5 font-bold text-warm">{{ idx.name }}</td>
+                      <td class="p-2.5 text-amber-accent">{{ idx.columnName }}</td>
                       <td class="p-2.5">{{ idx.isUnique ? 'YES' : 'NO' }}</td>
                       <td class="p-2.5">{{ idx.type }}</td>
                     </tr>
@@ -402,10 +402,10 @@
         </div>
 
         <!-- No Table Selected State -->
-        <div v-else class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-16 text-center backdrop-blur">
-          <Database class="mx-auto h-12 w-12 text-slate-600 mb-3" />
-          <h3 class="text-base font-semibold text-white">No Table Selected</h3>
-          <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+        <div v-else class="rounded-2xl border border-[#2e1c0d] panel-warm p-16 text-center backdrop-blur">
+          <Database class="mx-auto h-12 w-12 text-faint-warm mb-3" />
+          <h3 class="text-base font-semibold text-warm">No Table Selected</h3>
+          <p class="text-xs text-muted-warm mt-1 max-w-sm mx-auto">
             Choose a table from the sidebar on the left to browse records, view schema structure, or insert data.
           </p>
         </div>

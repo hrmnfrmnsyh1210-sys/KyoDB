@@ -1,14 +1,14 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm" @click="$emit('close')"></div>
+    <div class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm" @click="$emit('close')"></div>
 
-    <div class="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl border border-slate-800 bg-[#0c121e] shadow-2xl overflow-hidden">
+    <div class="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl border border-[#2e1c0d] bg-[#1a1007] shadow-2xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 px-6 py-4">
-        <h3 class="text-base font-semibold text-white">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
+        <h3 class="text-base font-semibold text-warm">
           {{ isEditing ? 'Edit Record' : 'Insert New Record' }}
         </h3>
-        <button class="p-1 rounded-lg text-slate-400 hover:text-white" @click="$emit('close')">
+        <button class="p-1 rounded-lg text-muted-warm hover:text-warm" @click="$emit('close')">
           <X class="h-4 w-4" />
         </button>
       </div>
@@ -23,16 +23,16 @@
       <form class="flex-1 overflow-y-auto p-6 space-y-4" @submit.prevent="handleSubmit">
         <div v-for="col in columns" :key="col.name" class="space-y-1">
           <div class="flex items-center justify-between">
-            <label class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+            <label class="text-xs font-medium text-muted-warm flex items-center gap-1.5">
               <span>{{ col.name }}</span>
               <span v-if="col.key === 'PRI'" class="text-[10px] text-amber-400 font-bold">(PK)</span>
-              <span v-if="!col.nullable && !col.extra.includes('auto_increment')" class="text-cyan-400">*</span>
+              <span v-if="!col.nullable && !col.extra.includes('auto_increment')" class="text-amber-accent">*</span>
             </label>
-            <span class="text-[10px] text-slate-500 font-mono">{{ col.type }}</span>
+            <span class="text-[10px] text-faint-warm font-mono">{{ col.type }}</span>
           </div>
 
           <!-- Auto Increment hint -->
-          <div v-if="!isEditing && col.extra.includes('auto_increment')" class="text-[11px] text-slate-500 italic">
+          <div v-if="!isEditing && col.extra.includes('auto_increment')" class="text-[11px] text-faint-warm italic">
             Auto-generated on insert
           </div>
 
@@ -42,22 +42,22 @@
               v-if="col.type.toLowerCase().includes('text') || col.type.toLowerCase().includes('json')"
               v-model="formData[col.name]"
               rows="3"
-              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-slate-200 placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
+              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2 text-xs font-mono text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none"
             ></textarea>
             <input
               v-else
               v-model="formData[col.name]"
               :disabled="isEditing && col.key === 'PRI'"
               type="text"
-              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-slate-200 placeholder-slate-600 focus:border-cyan-500 focus:outline-none disabled:opacity-50"
+              class="w-full rounded-xl border border-[#3a2410] bg-[#231509] px-3 py-2 text-xs font-mono text-warm placeholder-[#6a5545] focus:border-[#e8882a] focus:outline-none disabled:opacity-50"
             />
           </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#2e1c0d]">
           <button
             type="button"
-            class="rounded-xl border border-slate-700 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800"
+            class="rounded-xl border border-[#3a2410] px-4 py-2 text-xs font-medium text-muted-warm hover:bg-[#2a1a0c]"
             @click="$emit('close')"
           >
             Cancel
@@ -65,7 +65,7 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-50"
+            class="inline-flex items-center gap-2 rounded-xl btn-amber px-5 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:bg-[#f9a84a] disabled:opacity-50"
           >
             <RefreshCw v-if="isSubmitting" class="h-3.5 w-3.5 animate-spin" />
             <span>{{ isEditing ? 'Save Changes' : 'Insert Row' }}</span>

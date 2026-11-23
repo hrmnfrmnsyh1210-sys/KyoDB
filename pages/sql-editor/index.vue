@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-gradient-to-r from-blue-900/30 via-slate-900/40 to-slate-900/60 border border-slate-800/80 p-6 backdrop-blur">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl card-amber border border-[#2e1c0d] p-6 backdrop-blur">
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-2xl font-bold tracking-tight text-white">
-            Monaco <span class="text-cyan-400">SQL Editor</span>
+          <h1 class="text-2xl font-bold tracking-tight text-warm">
+            Monaco <span class="text-amber-accent">SQL Editor</span>
           </h1>
-          <span class="rounded-full bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 text-[11px] font-mono text-cyan-400">
+          <span class="rounded-full bg-[#e8882a]/10 border border-[#e8882a]/30 px-2.5 py-0.5 text-[11px] font-mono text-amber-accent">
             Phase 3 Active
           </span>
         </div>
-        <p class="text-xs text-slate-400 mt-1">
+        <p class="text-xs text-muted-warm mt-1">
           Execute interactive SQL queries with sub-millisecond execution telemetry and read-only enforcement.
         </p>
       </div>
@@ -20,10 +20,10 @@
       <div class="flex items-center gap-3">
         <!-- Target Database Selector -->
         <div class="flex items-center gap-2">
-          <Database class="h-4 w-4 text-cyan-400" />
+          <Database class="h-4 w-4 text-amber-accent" />
           <select
             v-model="selectedDatabase"
-            class="rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-1.5 text-xs font-mono text-cyan-300 focus:border-cyan-500 focus:outline-none"
+            class="rounded-xl border border-[#3a2410] input-warm px-3 py-1.5 text-xs font-mono text-amber-accent focus:border-[#e8882a] focus:outline-none"
           >
             <option v-for="db in databases" :key="db.name" :value="db.name">
               {{ db.name }} {{ db.isSystem ? '(System)' : '' }}
@@ -34,7 +34,7 @@
         <!-- Read Only Switch -->
         <label
           class="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs cursor-pointer transition-all select-none"
-          :class="isReadOnly ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-900/80 border-slate-800 text-slate-400'"
+          :class="isReadOnly ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#231509] border-[#2e1c0d] text-muted-warm'"
         >
           <input v-model="isReadOnly" type="checkbox" class="accent-emerald-400" />
           <span>Read-Only Mode</span>
@@ -42,7 +42,7 @@
 
         <!-- Run Query Button -->
         <button
-          class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-cyan-500 transition-all disabled:opacity-50"
+          class="inline-flex items-center gap-2 rounded-xl btn-amber px-5 py-2 text-xs font-semibold text-warm shadow-lg shadow-[#e8882a]/20 hover:from-[#f9a84a] hover:to-[#e8882a] transition-all disabled:opacity-50"
           :disabled="isExecuting || !sqlCode.trim() || !selectedDatabase"
           title="Press Ctrl+Enter to execute"
           @click="runQuery"
@@ -55,25 +55,25 @@
     </div>
 
     <!-- SQL Editor Box -->
-    <div class="rounded-2xl border border-slate-800/80 bg-[#0c121e] shadow-xl overflow-hidden">
+    <div class="rounded-2xl border border-[#2e1c0d] bg-[#1a1007] shadow-xl overflow-hidden">
       <!-- Editor Top Toolbar -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 px-4 py-2 bg-slate-900/60 text-xs">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-4 py-2 bg-[#1c1208] text-xs">
         <div class="flex items-center gap-2">
-          <Terminal class="h-3.5 w-3.5 text-blue-400" />
-          <span class="font-mono text-slate-300">query.sql</span>
-          <span class="text-slate-600">|</span>
-          <span class="text-[11px] text-slate-500">TiDB Serverless / MySQL 8.0</span>
+          <Terminal class="h-3.5 w-3.5 text-amber-accent" />
+          <span class="font-mono text-muted-warm">query.sql</span>
+          <span class="text-faint-warm">|</span>
+          <span class="text-[11px] text-faint-warm">TiDB Serverless / MySQL 8.0</span>
         </div>
 
         <div class="flex items-center gap-3">
           <button
-            class="text-slate-400 hover:text-white transition-colors"
+            class="text-muted-warm hover:text-warm transition-colors"
             @click="formatSql"
           >
             Format SQL
           </button>
           <button
-            class="text-slate-400 hover:text-white transition-colors"
+            class="text-muted-warm hover:text-warm transition-colors"
             @click="sqlCode = ''"
           >
             Clear
@@ -82,7 +82,7 @@
       </div>
 
       <!-- Editor Area -->
-      <div class="relative min-h-[220px] max-h-[360px] bg-[#0c121e]">
+      <div class="relative min-h-[220px] max-h-[360px] bg-[#1a1007]">
         <ClientOnly>
           <vue-monaco-editor
             v-model:value="sqlCode"
@@ -96,7 +96,7 @@
             <textarea
               v-model="sqlCode"
               rows="8"
-              class="w-full bg-[#0c121e] p-4 font-mono text-xs text-slate-200 outline-none resize-none"
+              class="w-full bg-[#1a1007] p-4 font-mono text-xs text-warm outline-none resize-none"
               placeholder="SELECT * FROM my_table LIMIT 10;"
               @keydown="handleKeyDown"
             ></textarea>
@@ -106,27 +106,27 @@
     </div>
 
     <!-- Bottom Section: Results & Telemetry Tabs -->
-    <div class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-6 backdrop-blur space-y-4">
+    <div class="rounded-2xl border border-[#2e1c0d] panel-warm p-6 backdrop-blur space-y-4">
       <!-- Tabs Header -->
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] pb-3">
         <div class="flex items-center gap-2">
           <button
             class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
-            :class="activeBottomTab === 'results' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'text-slate-400 hover:text-white'"
+            :class="activeBottomTab === 'results' ? 'bg-[#e8882a]/10 text-amber-accent border border-[#e8882a]/30' : 'text-muted-warm hover:text-warm'"
             @click="activeBottomTab = 'results'"
           >
             Query Results
           </button>
           <button
             class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
-            :class="activeBottomTab === 'history' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'text-slate-400 hover:text-white'"
+            :class="activeBottomTab === 'history' ? 'bg-[#e8882a]/10 text-amber-accent border border-[#e8882a]/30' : 'text-muted-warm hover:text-warm'"
             @click="activeBottomTab = 'history'"
           >
             Query History
           </button>
           <button
             class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
-            :class="activeBottomTab === 'snippets' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'text-slate-400 hover:text-white'"
+            :class="activeBottomTab === 'snippets' ? 'bg-[#e8882a]/10 text-amber-accent border border-[#e8882a]/30' : 'text-muted-warm hover:text-warm'"
             @click="activeBottomTab = 'snippets'"
           >
             SQL Templates
@@ -142,17 +142,17 @@
             {{ queryResult.status === 'success' ? '✓ Query Executed' : '✗ Query Error' }}
           </span>
 
-          <span class="text-slate-400 font-mono">
+          <span class="text-muted-warm font-mono">
             ⏱ {{ queryResult.executionTimeMs }}ms
           </span>
 
-          <span v-if="queryResult.rows" class="text-slate-400 font-mono">
+          <span v-if="queryResult.rows" class="text-muted-warm font-mono">
             {{ queryResult.rows.length }} rows returned
           </span>
 
           <button
             v-if="queryResult.rows && queryResult.rows.length > 0"
-            class="inline-flex items-center gap-1 text-slate-300 hover:text-cyan-400 ml-2"
+            class="inline-flex items-center gap-1 text-muted-warm hover:text-[#f9a84a] ml-2"
             @click="exportResultCsv"
           >
             <Download class="h-3 w-3" />
@@ -173,8 +173,8 @@
         </div>
 
         <!-- Empty Query State -->
-        <div v-else-if="!queryResult" class="py-12 text-center text-xs text-slate-500">
-          Enter an SQL query and press <strong class="text-slate-400">Run (Ctrl+Enter)</strong> to see live output.
+        <div v-else-if="!queryResult" class="py-12 text-center text-xs text-faint-warm">
+          Enter an SQL query and press <strong class="text-muted-warm">Run (Ctrl+Enter)</strong> to see live output.
         </div>
 
         <!-- Non-SELECT affected rows info -->
@@ -186,24 +186,24 @@
         </div>
 
         <!-- Results Data Table -->
-        <div v-else-if="queryResult.rows && queryResult.rows.length > 0" class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 max-h-[460px]">
+        <div v-else-if="queryResult.rows && queryResult.rows.length > 0" class="overflow-x-auto rounded-xl border border-[#2e1c0d] bg-[#120a04]/70 max-h-[460px]">
           <table class="w-full text-left text-xs border-collapse">
-            <thead class="sticky top-0 bg-[#0f172a] border-b border-slate-800 text-slate-400 font-mono text-[11px] uppercase tracking-wider">
+            <thead class="sticky top-0 bg-[#1a1007] border-b border-[#2e1c0d] text-muted-warm font-mono text-[11px] uppercase tracking-wider">
               <tr>
                 <th v-for="col in queryResult.columns" :key="col" class="p-2.5">
                   {{ col }}
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
-              <tr v-for="(row, idx) in queryResult.rows" :key="idx" class="hover:bg-slate-900/80">
+            <tbody class="divide-y divide-[#2e1c0d]/60 font-mono text-muted-warm">
+              <tr v-for="(row, idx) in queryResult.rows" :key="idx" class="hover:bg-[#231509]">
                 <td
                   v-for="col in queryResult.columns"
                   :key="col"
                   class="p-2.5 max-w-xs truncate"
                   :title="String(row[col] ?? '')"
                 >
-                  <span v-if="row[col] === null" class="text-slate-600 italic">NULL</span>
+                  <span v-if="row[col] === null" class="text-faint-warm italic">NULL</span>
                   <span v-else>{{ row[col] }}</span>
                 </td>
               </tr>
@@ -218,22 +218,22 @@
           <div
             v-for="hist in queryHistory"
             :key="hist.id"
-            class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/50 p-3 text-xs font-mono"
+            class="flex items-center justify-between rounded-xl border border-[#2e1c0d] bg-[#1c1208] p-3 text-xs font-mono"
           >
             <div class="flex items-center gap-3 min-w-0">
               <span
                 class="w-2 h-2 rounded-full shrink-0"
                 :class="hist.status === 'success' ? 'bg-emerald-400' : 'bg-red-400'"
               ></span>
-              <span class="text-cyan-400 uppercase font-bold text-[11px]">{{ hist.queryType }}</span>
-              <span class="text-slate-400 truncate text-[11px]">in {{ hist.databaseName }}</span>
-              <span class="text-slate-500 text-[10px]">{{ hist.executionTimeMs }}ms</span>
+              <span class="text-amber-accent uppercase font-bold text-[11px]">{{ hist.queryType }}</span>
+              <span class="text-muted-warm truncate text-[11px]">in {{ hist.databaseName }}</span>
+              <span class="text-faint-warm text-[10px]">{{ hist.executionTimeMs }}ms</span>
             </div>
 
-            <span class="text-slate-500 text-[10px] shrink-0">{{ formatDate(hist.executedAt) }}</span>
+            <span class="text-faint-warm text-[10px] shrink-0">{{ formatDate(hist.executedAt) }}</span>
           </div>
         </div>
-        <div v-else class="py-10 text-center text-xs text-slate-500">
+        <div v-else class="py-10 text-center text-xs text-faint-warm">
           No executed queries logged yet.
         </div>
       </div>
@@ -243,14 +243,14 @@
         <div
           v-for="snippet in sqlSnippets"
           :key="snippet.title"
-          class="rounded-xl border border-slate-800 bg-slate-900/40 p-3.5 space-y-2 hover:border-slate-700 transition-colors cursor-pointer"
+          class="rounded-xl border border-[#2e1c0d] bg-[#1c1208] p-3.5 space-y-2 hover:border-[#3a2410] transition-colors cursor-pointer"
           @click="loadSnippet(snippet.sql)"
         >
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-white">{{ snippet.title }}</span>
-            <span class="text-[10px] text-cyan-400 font-mono">Insert →</span>
+            <span class="text-xs font-bold text-warm">{{ snippet.title }}</span>
+            <span class="text-[10px] text-amber-accent font-mono">Insert →</span>
           </div>
-          <code class="block text-[11px] font-mono text-slate-400 bg-slate-950 p-2 rounded truncate">
+          <code class="block text-[11px] font-mono text-muted-warm bg-[#120a04] p-2 rounded truncate">
             {{ snippet.sql }}
           </code>
         </div>

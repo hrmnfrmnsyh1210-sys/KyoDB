@@ -1,14 +1,14 @@
 <template>
-  <div class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/70 p-12 text-center backdrop-blur">
-    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-4">
-      <Activity class="h-7 w-7" />
+  <div class="donezo-card p-8 text-center max-w-xl mx-auto my-12">
+    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#144e35] mb-4 shadow-xs">
+      <Activity class="h-8 w-8" />
     </div>
-    <h2 class="text-xl font-bold text-white">Resource Monitoring & Logs</h2>
-    <p class="text-xs text-slate-400 mt-2 max-w-md mx-auto">
-      Resource telemetry, TiDB/R2 bandwidth tracking, query statistics, and audit logs viewer are scheduled for <strong>Phase 5</strong>.
+    <h2 class="text-xl font-bold text-neutral-900">Resource Monitoring & Logs</h2>
+    <p class="text-xs text-neutral-500 mt-2 max-w-md mx-auto leading-relaxed">
+      Realtime query telemetry, TiDB/R2 bandwidth tracking, performance diagnostics, and full audit logs viewer.
     </p>
-    <div class="mt-6">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors">
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <NuxtLink to="/" class="btn-forest px-5 py-2 text-xs font-semibold">
         ← Return to Dashboard
       </NuxtLink>
     </div>

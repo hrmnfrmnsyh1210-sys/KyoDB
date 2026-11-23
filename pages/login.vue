@@ -1,59 +1,61 @@
 <template>
-  <div class="rounded-2xl border border-slate-800/80 bg-[#0f172a]/80 p-8 backdrop-blur-xl shadow-2xl shadow-black/80">
+  <div class="donezo-card p-8 sm:p-10 shadow-lg border border-neutral-200">
     <!-- Brand Title -->
     <div class="text-center mb-8">
-      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 shadow-lg shadow-cyan-500/20 mb-4">
-        <Database class="h-6 w-6 text-white" />
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-sm mb-4"
+        style="background: linear-gradient(135deg, #16533a 0%, #144e35 100%);">
+        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" opacity="0.3"/>
+          <path d="M12 4a8 8 0 100 16 8 8 0 000-16zm-1 12V8l5 4-5 4z" />
+        </svg>
       </div>
-      <h1 class="text-2xl font-bold tracking-tight text-white">
-        Kyo<span class="text-cyan-400">DB</span>
+      <h1 class="text-2xl font-bold tracking-tight text-neutral-900">
+        Kyo<span class="text-[#144e35]">DB</span>
       </h1>
-      <p class="text-xs text-slate-400 mt-1 font-mono">
-        One Dashboard. All Your Data.
+      <p class="text-xs text-neutral-400 mt-1">
+        Plan, prioritize, and accomplish your tasks with ease.
       </p>
     </div>
 
     <!-- Alert Banner -->
     <div
       v-if="errorMessage"
-      class="mb-6 rounded-lg bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-300 flex items-start gap-2.5"
+      class="mb-6 rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-700 flex items-start gap-2.5"
     >
-      <AlertCircle class="h-4 w-4 shrink-0 mt-0.5 text-rose-400" />
+      <AlertCircle class="h-4 w-4 shrink-0 mt-0.5 text-rose-500" />
       <div>{{ errorMessage }}</div>
     </div>
 
     <div
       v-if="successMessage"
-      class="mb-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3.5 text-xs text-emerald-300 flex items-start gap-2.5"
+      class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 p-3.5 text-xs text-emerald-700 flex items-start gap-2.5"
     >
-      <CheckCircle2 class="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />
+      <CheckCircle2 class="h-4 w-4 shrink-0 mt-0.5 text-emerald-500" />
       <div>{{ successMessage }}</div>
     </div>
 
     <!-- Mode Selector if Bootstrap Needed -->
-    <div v-if="auth.requiresBootstrap.value" class="mb-6 rounded-lg bg-indigo-500/10 border border-indigo-500/30 p-3 text-xs text-indigo-300">
-      <div class="font-semibold text-white mb-1">First Time Setup Detected</div>
-      <div>No administrator is registered yet. Create your master administrator account below.</div>
+    <div v-if="auth.requiresBootstrap.value" class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-800">
+      <div class="font-bold mb-1">First Time Setup Detected</div>
+      <div>No administrator registered yet. Create your master administrator account below.</div>
     </div>
 
     <!-- Standard Login Form -->
     <form v-if="!auth.requiresBootstrap.value" @submit.prevent="handleLogin" class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1.5">Username or Email</label>
-        <div class="relative">
-          <input
-            v-model="identifier"
-            type="text"
-            required
-            autocomplete="username"
-            placeholder="admin@kyodb.local"
-            class="w-full rounded-lg bg-slate-900/90 border border-slate-700/80 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors"
-          />
-        </div>
+        <label class="block text-xs font-semibold text-neutral-700 mb-1.5">Username or Email</label>
+        <input
+          v-model="identifier"
+          type="text"
+          required
+          autocomplete="username"
+          placeholder="admin@kyodb.local"
+          class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-2.5 text-xs text-neutral-900 placeholder-neutral-400 focus:border-[#144e35] focus:bg-white focus:outline-none transition-colors"
+        />
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1.5">Password</label>
+        <label class="block text-xs font-semibold text-neutral-700 mb-1.5">Password</label>
         <div class="relative">
           <input
             v-model="password"
@@ -61,11 +63,11 @@
             required
             autocomplete="current-password"
             placeholder="••••••••••••"
-            class="w-full rounded-lg bg-slate-900/90 border border-slate-700/80 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors pr-10"
+            class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-2.5 text-xs text-neutral-900 placeholder-neutral-400 focus:border-[#144e35] focus:bg-white focus:outline-none transition-colors pr-10"
           />
           <button
             type="button"
-            class="absolute right-3 top-2.5 text-slate-400 hover:text-white"
+            class="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-700"
             @click="showPassword = !showPassword"
           >
             <Eye v-if="!showPassword" class="h-4 w-4" />
@@ -77,7 +79,7 @@
       <button
         type="submit"
         :disabled="isSubmitting"
-        class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+        class="w-full mt-2 btn-forest py-2.5 text-xs font-semibold flex items-center justify-center gap-2"
       >
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         <span>{{ isSubmitting ? 'Authenticating...' : 'Sign In to Dashboard' }}</span>
@@ -87,53 +89,53 @@
     <!-- Bootstrap Form -->
     <form v-else @submit.prevent="handleBootstrap" class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1.5">Admin Username</label>
+        <label class="block text-xs font-semibold text-neutral-700 mb-1.5">Admin Username</label>
         <input
           v-model="bootstrapUsername"
           type="text"
           required
           placeholder="admin"
-          class="w-full rounded-lg bg-slate-900/90 border border-slate-700/80 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors"
+          class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-2.5 text-xs text-neutral-900 focus:border-[#144e35] focus:bg-white focus:outline-none"
         />
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1.5">Admin Email</label>
+        <label class="block text-xs font-semibold text-neutral-700 mb-1.5">Admin Email</label>
         <input
           v-model="bootstrapEmail"
           type="email"
           required
           placeholder="admin@kyodb.local"
-          class="w-full rounded-lg bg-slate-900/90 border border-slate-700/80 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors"
+          class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-2.5 text-xs text-neutral-900 focus:border-[#144e35] focus:bg-white focus:outline-none"
         />
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1.5">Master Password (min 8 chars)</label>
+        <label class="block text-xs font-semibold text-neutral-700 mb-1.5">Master Password (min 8 chars)</label>
         <input
           v-model="bootstrapPassword"
           type="password"
           required
           minlength="8"
           placeholder="••••••••••••"
-          class="w-full rounded-lg bg-slate-900/90 border border-slate-700/80 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors"
+          class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-2.5 text-xs text-neutral-900 focus:border-[#144e35] focus:bg-white focus:outline-none"
         />
       </div>
 
       <button
         type="submit"
         :disabled="isSubmitting"
-        class="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500 focus:outline-none disabled:opacity-50 transition-all"
+        class="w-full mt-2 btn-forest py-2.5 text-xs font-semibold flex items-center justify-center gap-2"
       >
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         <span>Initialize Administrator</span>
       </button>
     </form>
 
-    <!-- Footer Security Notice -->
-    <div class="mt-8 pt-4 border-t border-slate-800/80 text-center">
-      <p class="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
-        <ShieldCheck class="h-3.5 w-3.5 text-blue-400" />
+    <!-- Footer Notice -->
+    <div class="mt-8 pt-4 border-t border-neutral-100 text-center">
+      <p class="text-[11px] text-neutral-400 flex items-center justify-center gap-1.5">
+        <ShieldCheck class="h-3.5 w-3.5 text-emerald-600" />
         <span>Argon2id Session Security • Strict Rate Limiting</span>
       </p>
     </div>
@@ -141,11 +143,9 @@
 </template>
 
 <script setup lang="ts">
-import { Database, AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, ShieldCheck } from '@lucide/vue'
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, ShieldCheck } from '@lucide/vue'
 
-definePageMeta({
-  layout: 'auth'
-})
+definePageMeta({ layout: 'auth' })
 
 const auth = useAuth()
 const route = useRoute()

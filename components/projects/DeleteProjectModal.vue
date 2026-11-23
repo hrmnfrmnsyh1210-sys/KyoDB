@@ -1,25 +1,25 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
     <div
-      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+      class="fixed inset-0 modal-backdrop-warm backdrop-blur-sm transition-opacity"
       @click="$emit('close')"
     ></div>
 
-    <div class="relative w-full max-w-md rounded-2xl border border-red-500/30 bg-[#0c121e] shadow-2xl shadow-red-950/20 overflow-hidden">
+    <div class="relative w-full max-w-md rounded-2xl border border-red-500/30 bg-[#1a1007] shadow-2xl shadow-red-950/20 overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-slate-800/80 px-6 py-4">
+      <div class="flex items-center justify-between border-b border-[#2e1c0d] px-6 py-4">
         <div class="flex items-center gap-2.5">
           <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
             <Trash2 class="h-4 w-4" />
           </div>
           <div>
             <h3 class="text-base font-semibold text-white">Delete Project</h3>
-            <p class="text-xs text-slate-400">Destructive operation</p>
+            <p class="text-xs text-[#9b8674]">Destructive operation</p>
           </div>
         </div>
 
         <button
-          class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+          class="p-1 rounded-lg text-[#9b8674] hover:text-[#f0e6d8] hover:bg-[#2a1a0c] transition-colors"
           @click="$emit('close')"
         >
           <X class="h-4 w-4" />
@@ -34,8 +34,8 @@
 
       <!-- Warning & Content -->
       <div class="p-6 space-y-4">
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Are you sure you want to delete project <strong class="text-white">{{ project?.name }}</strong> (<code class="text-cyan-400 font-mono">{{ project?.slug }}</code>)?
+        <p class="text-xs text-[#d6c6b4] leading-relaxed">
+          Are you sure you want to delete project <strong class="text-white">{{ project?.name }}</strong> (<code class="text-[#e8882a] font-mono">{{ project?.slug }}</code>)?
         </p>
 
         <div class="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3.5 text-xs text-amber-300 space-y-1">
@@ -62,17 +62,17 @@
             <span class="font-semibold text-red-300 block">
               Also drop {{ project.databasesCount }} associated TiDB database(s) from cluster
             </span>
-            <span class="text-[11px] text-slate-400 block mt-0.5">
+            <span class="text-[11px] text-[#9b8674] block mt-0.5">
               Permanently executes <code class="text-red-400 font-mono">DROP DATABASE</code> on the cluster. All tables and data will be destroyed.
             </span>
           </div>
         </label>
 
         <!-- Actions -->
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#2e1c0d]">
           <button
             type="button"
-            class="rounded-xl border border-slate-700/80 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            class="rounded-xl border border-[#3a2410] px-4 py-2 text-xs font-medium text-[#d6c6b4] hover:bg-[#2a1a0c] hover:text-[#f0e6d8] transition-colors"
             @click="$emit('close')"
           >
             Cancel
