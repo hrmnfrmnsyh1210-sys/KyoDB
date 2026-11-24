@@ -13,7 +13,9 @@ export default defineNuxtConfig({
     head: {
       title: 'KyoDB - Smart Database & Cloud Storage Manager',
       link: [
-        { rel: 'icon', type: 'image/webp', href: '/images/logo.webp' }
+        { rel: 'icon', type: 'image/png', href: '/images/logo-kyodb.png' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
       ]
     }
   },
