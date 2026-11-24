@@ -32,6 +32,44 @@ interface StoredUserConnection {
 // In-memory fallback for local dev when system DB is offline
 const inMemoryUserConnections: StoredUserConnection[] = []
 
+// Track whether table schema has been verified in TiDB
+let hasEnsuredUserTable = false
+
+export async function ensureUserDatabaseTable(): Promise<void> {
+  if (hasEnsuredUserTable) return
+  const pool = getDbPool()
+  if (!pool) return
+
+  try {
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_database_connections (
+        id VARCHAR(36) PRIMARY KEY,
+        user_id VARCHAR(36) NOT NULL,
+        name VARCHAR(128) NOT NULL,
+        host VARCHAR(255) NOT NULL,
+        port INT NOT NULL DEFAULT 4000,
+        username VARCHAR(128) NOT NULL,
+        password_encrypted TEXT NOT NULL,
+        database_name VARCHAR(128) NOT NULL,
+        ssl_ca TEXT DEFAULT NULL,
+        is_default TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_user_id (user_id),
+        INDEX idx_is_default (user_id, is_default)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `)
+    try {
+      await pool.execute(`
+        ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS role VARCHAR(32) DEFAULT 'user';
+      `)
+    } catch {}
+    hasEnsuredUserTable = true
+  } catch (err: any) {
+    console.warn('[UserDbService] Could not ensure user_database_connections table:', err.message)
+  }
+}
+
 // Active connection pool cache: connectionId -> mysql.Pool
 const userPools = new Map<string, mysql.Pool>()
 
@@ -118,6 +156,7 @@ export async function testTiDbCredentials(params: TestConnectionInput): Promise<
  * List all configured TiDB database connections for a user
  */
 export async function getUserConnections(userId: string): Promise<UserDatabaseConnection[]> {
+  await ensureUserDatabaseTable()
   const pool = getDbPool()
 
   if (pool) {
@@ -221,6 +260,7 @@ export async function createUserConnection(
   input: CreateUserConnectionInput,
   ipAddress?: string
 ): Promise<UserDatabaseConnection> {
+  await ensureUserDatabaseTable()
   const pool = getDbPool()
   const id = generateUUID()
   const now = new Date().toISOString()
@@ -258,26 +298,52 @@ export async function createUserConnection(
         ]
       )
     } catch (err: any) {
-      console.warn('[UserDbService] TiDB insert failed, saving in-memory:', err.message)
-      if (isDefault) {
-        inMemoryUserConnections.forEach((c) => {
-          if (c.user_id === userId) c.is_default = 0
+      console.warn('[UserDbService] TiDB insert failed, attempting table creation & retry:', err.message)
+      try {
+        hasEnsuredUserTable = false
+        await ensureUserDatabaseTable()
+        if (isDefault) {
+          await pool.execute('UPDATE user_database_connections SET is_default = 0 WHERE user_id = ?', [userId])
+        }
+        await pool.execute(
+          `INSERT INTO user_database_connections
+           (id, user_id, name, host, port, username, password_encrypted, database_name, ssl_ca, is_default, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [
+            id,
+            userId,
+            input.name,
+            input.host,
+            input.port || 4000,
+            input.username,
+            encryptedPassword,
+            input.database,
+            input.sslCa || null,
+            isDefault ? 1 : 0
+          ]
+        )
+      } catch (retryErr: any) {
+        console.error('[UserDbService] TiDB retry insert failed, saving in-memory:', retryErr.message)
+        if (isDefault) {
+          inMemoryUserConnections.forEach((c) => {
+            if (c.user_id === userId) c.is_default = 0
+          })
+        }
+        inMemoryUserConnections.push({
+          id,
+          user_id: userId,
+          name: input.name,
+          host: input.host,
+          port: input.port || 4000,
+          username: input.username,
+          password_encrypted: encryptedPassword,
+          database_name: input.database,
+          ssl_ca: input.sslCa || null,
+          is_default: isDefault ? 1 : 0,
+          created_at: now,
+          updated_at: now
         })
       }
-      inMemoryUserConnections.push({
-        id,
-        user_id: userId,
-        name: input.name,
-        host: input.host,
-        port: input.port || 4000,
-        username: input.username,
-        password_encrypted: encryptedPassword,
-        database_name: input.database,
-        ssl_ca: input.sslCa || null,
-        is_default: isDefault ? 1 : 0,
-        created_at: now,
-        updated_at: now
-      })
     }
   } else {
     if (isDefault) {

@@ -18,16 +18,50 @@ export const useUserDatabases = () => {
 
   const hasConnection = computed(() => connections.value.length > 0)
 
+  const loadCached = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('kyodb_user_connections')
+        if (raw && connections.value.length === 0) {
+          connections.value = JSON.parse(raw)
+        }
+      } catch {}
+    }
+  }
+
+  const saveCached = (list: UserDatabaseConnection[]) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('kyodb_user_connections', JSON.stringify(list))
+      } catch {}
+    }
+  }
+
   const fetchConnections = async () => {
+    loadCached()
     isLoading.value = true
     error.value = null
     try {
-      const res = await $fetch<{ success: boolean; data: UserDatabaseConnection[] }>('/api/user-databases')
-      connections.value = res.data || []
+      let headers: Record<string, string> | undefined
+      try {
+        if (typeof useRequestHeaders === 'function') {
+          headers = useRequestHeaders(['cookie']) as Record<string, string>
+        }
+      } catch {}
+
+      const res = await $fetch<{ success: boolean; data: UserDatabaseConnection[] }>('/api/user-databases', { headers })
+      if (res.data && res.data.length > 0) {
+        connections.value = res.data
+        saveCached(res.data)
+      } else if (connections.value.length === 0) {
+        connections.value = []
+        saveCached([])
+      }
       return connections.value
     } catch (err: any) {
       error.value = err.data?.statusMessage || err.message || 'Failed to load database connections'
-      return []
+      loadCached()
+      return connections.value
     } finally {
       isLoading.value = false
     }
