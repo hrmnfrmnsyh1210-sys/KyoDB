@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#030712] text-neutral-100 selection:bg-[#00DC82]/30 selection:text-[#00DC82] flex flex-col font-sans relative overflow-x-hidden">
+  <div class="min-h-screen bg-[#030712] text-neutral-100 selection:bg-[#00DC82]/30 selection:text-[#00DC82] flex flex-col font-sans relative">
     <!-- Nuxt Grid & Radial Ambient Glow Background -->
     <div
       class="pointer-events-none fixed inset-0 -z-10"
@@ -96,7 +96,7 @@
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1">
+    <main class="flex-1 overflow-x-hidden">
       <!-- Hero Section -->
       <section
         ref="heroSectionRef"
