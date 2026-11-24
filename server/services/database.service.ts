@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise'
 import { getDbPool, isSystemDatabase } from './db.service'
+import { getDbPoolForUser } from './user-db.service'
 import { generateUUID } from '../utils/crypto'
 import { logAudit } from './audit.service'
 import {
@@ -22,8 +23,8 @@ import type {
 /**
  * List all databases on the TiDB cluster with table counts and storage size
  */
-export async function listDatabasesWithStats(): Promise<DatabaseInfo[]> {
-  const pool = getDbPool()
+export async function listDatabasesWithStats(userId?: string): Promise<DatabaseInfo[]> {
+  const pool = await getDbPoolForUser(userId)
   if (!pool) return []
 
   try {
@@ -76,9 +77,10 @@ export async function createDatabase(
   charset = 'utf8mb4',
   collation = 'utf8mb4_unicode_ci',
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; message: string; name: string }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeName = validateSqlIdentifier(name, 'Database name')
@@ -122,9 +124,10 @@ export async function createDatabase(
 export async function deleteDatabase(
   name: string,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; message: string }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeName = validateSqlIdentifier(name, 'Database name')
@@ -167,8 +170,8 @@ export async function deleteDatabase(
 /**
  * List all tables inside a specific database
  */
-export async function listTablesForDatabase(databaseName: string): Promise<TableInfo[]> {
-  const pool = getDbPool()
+export async function listTablesForDatabase(databaseName: string, userId?: string): Promise<TableInfo[]> {
+  const pool = await getDbPoolForUser(userId)
   if (!pool) return []
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -211,9 +214,10 @@ export async function listTablesForDatabase(databaseName: string): Promise<Table
  */
 export async function getTableDetails(
   databaseName: string,
-  tableName: string
+  tableName: string,
+  userId?: string
 ): Promise<{ columns: TableColumn[]; indexes: TableIndex[] }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -274,9 +278,10 @@ export async function createTable(
   databaseName: string,
   params: CreateTableInput,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; message: string }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -284,7 +289,7 @@ export async function createTable(
 
   // Prevent modifying internal system tables in kyodb_system
   if (isSystemDatabase(safeDb)) {
-    const internalTables = ['admin_users', 'sessions', 'projects', 'project_databases', 'storage_objects', 'api_keys', 'audit_logs', 'query_history']
+    const internalTables = ['admin_users', 'sessions', 'projects', 'project_databases', 'storage_objects', 'api_keys', 'audit_logs', 'query_history', 'user_database_connections']
     if (internalTables.includes(safeTable.toLowerCase())) {
       throw createError({
         statusCode: 403,
@@ -370,9 +375,10 @@ export async function dropTable(
   databaseName: string,
   tableName: string,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; message: string }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -416,9 +422,10 @@ export async function dropTable(
 export async function getTableData(
   databaseName: string,
   tableName: string,
-  params: TableDataQueryInput
+  params: TableDataQueryInput,
+  userId?: string
 ): Promise<TableDataResponse> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -499,9 +506,10 @@ export async function insertTableRow(
   tableName: string,
   rowData: Record<string, any>,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; insertId?: any }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -554,9 +562,10 @@ export async function updateTableRow(
   primaryKeyValue: any,
   rowData: Record<string, any>,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; affectedRows: number }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -608,9 +617,10 @@ export async function deleteTableRow(
   primaryKey: string,
   primaryKeyValue: any,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<{ success: boolean; affectedRows: number }> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')
@@ -652,9 +662,10 @@ export async function executeRawSql(
   sql: string,
   readOnly = false,
   adminId?: string | null,
-  ipAddress?: string | null
+  ipAddress?: string | null,
+  userId?: string
 ): Promise<QueryExecutionResult> {
-  const pool = getDbPool()
+  const pool = await getDbPoolForUser(userId || adminId || undefined)
   if (!pool) throw createError({ statusCode: 500, statusMessage: 'TiDB connection not available' })
 
   const safeDb = validateSqlIdentifier(databaseName, 'Database name')

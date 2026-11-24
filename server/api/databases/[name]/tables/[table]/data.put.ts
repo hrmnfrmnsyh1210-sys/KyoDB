@@ -2,7 +2,8 @@ import { updateRowSchema } from '../../../../../validators/database.validator'
 import { updateTableRow } from '../../../../../services/database.service'
 
 export default defineEventHandler(async (event) => {
-  if (!event.context.admin) {
+  const user = event.context.user || event.context.admin
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -29,8 +30,9 @@ export default defineEventHandler(async (event) => {
     validation.data.primaryKey,
     validation.data.primaryKeyValue,
     validation.data.data,
-    event.context.admin.id,
-    clientIp
+    user.id,
+    clientIp,
+    user.id
   )
 
   return result

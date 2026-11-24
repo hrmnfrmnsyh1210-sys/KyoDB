@@ -31,13 +31,12 @@ export default defineEventHandler(async (event) => {
     userAgent
   )
 
-  const host = getRequestHeader(event, 'host') || ''
-  const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1')
+  const isHttps = getRequestProtocol(event) === 'https'
 
-  // Set secure HTTP-only cookie (secure on production HTTPS, lax on local HTTP)
+  // Set secure HTTP-only cookie (secure only on actual HTTPS connections)
   setCookie(event, 'kyodb_session', rawToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' && !isLocalhost,
+    secure: isHttps,
     sameSite: 'lax',
     expires: expiresAt,
     path: '/'

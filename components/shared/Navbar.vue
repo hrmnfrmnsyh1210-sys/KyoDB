@@ -25,8 +25,9 @@
 
     <!-- Right Controls: Status Pills + Refresh Button + User Capsule -->
     <div class="flex items-center gap-3">
-      <!-- TiDB Health status pill -->
+      <!-- TiDB Health status pill (Admin uses system health, User uses active connection) -->
       <div
+        v-if="isAdmin"
         class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-xs"
         :class="tidbClass"
       >
@@ -35,8 +36,23 @@
         <span class="text-neutral-500 font-normal">{{ tidbStatusText }}</span>
       </div>
 
-      <!-- R2 Health status pill -->
+      <!-- Public User TiDB Status Pill -->
+      <NuxtLink
+        v-else
+        to="/app?connect=1"
+        class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-xs hover:opacity-85 transition-opacity"
+        :class="activeConnection ? 'bg-emerald-50/60 border-emerald-200 text-emerald-800' : 'bg-amber-50/60 border-amber-200 text-amber-800'"
+      >
+        <span class="w-2 h-2 rounded-full" :class="activeConnection ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'"></span>
+        <span class="font-semibold">TiDB</span>
+        <span class="text-neutral-500 font-normal truncate max-w-[120px]">
+          {{ activeConnection ? activeConnection.name : 'Connect TiDB' }}
+        </span>
+      </NuxtLink>
+
+      <!-- R2 Health status pill (Admin only) -->
       <div
+        v-if="isAdmin"
         class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-xs"
         :class="r2Class"
       >
@@ -47,6 +63,7 @@
 
       <!-- Notification Round Button -->
       <button
+        v-if="isAdmin"
         class="w-9 h-9 rounded-full bg-white border border-neutral-200/80 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors relative"
         title="Refresh Status"
         :disabled="isChecking"
@@ -92,9 +109,12 @@ defineEmits<{ (e: 'toggle-sidebar'): void }>()
 
 const auth = useAuth()
 const { health, isChecking, checkHealth } = useSystemHealth()
+const { activeConnection } = useUserDatabases()
+
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
 
 onMounted(async () => {
-  if (!health.value) await checkHealth()
+  if (isAdmin.value && !health.value) await checkHealth()
 })
 
 const userInitials = computed(() => {

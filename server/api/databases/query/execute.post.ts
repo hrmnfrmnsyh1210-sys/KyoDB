@@ -2,7 +2,8 @@ import { executeSqlSchema } from '../../../validators/database.validator'
 import { executeRawSql } from '../../../services/database.service'
 
 export default defineEventHandler(async (event) => {
-  if (!event.context.admin) {
+  const user = event.context.user || event.context.admin
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -20,8 +21,9 @@ export default defineEventHandler(async (event) => {
     validation.data.database,
     validation.data.sql,
     validation.data.readOnly,
-    event.context.admin.id,
-    clientIp
+    user.id,
+    clientIp,
+    user.id
   )
 
   return {

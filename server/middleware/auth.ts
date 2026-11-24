@@ -55,10 +55,20 @@ export default defineEventHandler(async (event) => {
 
   // Protect database management and SQL execution mutation endpoints
   if (path.startsWith('/api/databases') && (event.method === 'POST' || event.method === 'PUT' || event.method === 'DELETE')) {
-    if (!event.context.admin) {
+    if (!event.context.admin && !event.context.user) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'Unauthorized. Admin session required.'
+        statusMessage: 'Unauthorized. Active session required.'
+      })
+    }
+  }
+
+  // Protect user database connection management endpoints
+  if (path.startsWith('/api/user-databases')) {
+    if (!event.context.admin && !event.context.user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized. Please sign in.'
       })
     }
   }

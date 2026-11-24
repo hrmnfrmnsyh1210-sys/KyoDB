@@ -1,7 +1,8 @@
 import { deleteDatabase } from '../../../services/database.service'
 
 export default defineEventHandler(async (event) => {
-  if (!event.context.admin) {
+  const user = event.context.user || event.context.admin
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -13,8 +14,9 @@ export default defineEventHandler(async (event) => {
   const clientIp = getRequestIP(event, { xForwardedFor: true }) || '127.0.0.1'
   const result = await deleteDatabase(
     name,
-    event.context.admin.id,
-    clientIp
+    user.id,
+    clientIp,
+    user.id
   )
 
   return result

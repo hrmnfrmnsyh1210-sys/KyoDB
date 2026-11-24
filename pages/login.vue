@@ -77,6 +77,13 @@
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         <span>{{ isSubmitting ? 'Authenticating...' : 'Sign In to Dashboard' }}</span>
       </button>
+
+      <div class="pt-2 text-center text-xs text-neutral-500">
+        Don't have an account yet?
+        <NuxtLink to="/register" class="font-semibold text-[#144e35] hover:underline ml-1">
+          Create account
+        </NuxtLink>
+      </div>
     </form>
 
     <!-- Bootstrap Form -->
@@ -158,7 +165,13 @@ const successMessage = ref<string | null>(null)
 onMounted(async () => {
   await auth.fetchUser()
   if (auth.isAuthenticated.value) {
-    await navigateTo('/dashboard')
+    const role = auth.user.value?.role
+    let dest = (route.query.redirect as string) || (role === 'admin' ? '/dashboard' : '/app')
+    if (role === 'admin' && dest === '/app') dest = '/dashboard'
+    if (role !== 'admin' && ['/dashboard', '/projects', '/monitoring', '/storage'].some((p) => dest === p || dest.startsWith(p + '/'))) {
+      dest = '/app'
+    }
+    await navigateTo(dest)
   }
 })
 
@@ -170,12 +183,15 @@ const handleLogin = async () => {
   try {
     const res = await auth.login(identifier.value, password.value)
     if (res.success) {
-      const redirectPath = (route.query.redirect as string) || '/dashboard'
-      if (typeof window !== 'undefined') {
-        window.location.href = redirectPath
-      } else {
-        await navigateTo(redirectPath)
+      // Role-aware redirect
+      const role = auth.user.value?.role
+      let dest = (route.query.redirect as string) || (role === 'admin' ? '/dashboard' : '/app')
+      if (role === 'admin' && dest === '/app') dest = '/dashboard'
+      if (role !== 'admin' && ['/dashboard', '/projects', '/monitoring', '/storage'].some((p) => dest === p || dest.startsWith(p + '/'))) {
+        dest = '/app'
       }
+
+      await navigateTo(dest)
     } else {
       errorMessage.value = res.error || 'Invalid credentials'
     }

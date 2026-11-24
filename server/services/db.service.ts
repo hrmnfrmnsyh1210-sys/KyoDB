@@ -8,23 +8,35 @@ export function isSystemDatabase(dbName: string): boolean {
 }
 
 export function getDbPool(): mysql.Pool | null {
-  const config = useRuntimeConfig()
+  let config: any = {}
+  try {
+    config = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : {}
+  } catch {
+    config = {}
+  }
 
-  if (!config.tidbHost || !config.tidbUser) {
+  const tidbHost = config.tidbHost || process.env.TIDB_HOST
+  const tidbUser = config.tidbUser || process.env.TIDB_USER
+  const tidbPassword = config.tidbPassword || process.env.TIDB_PASSWORD
+  const tidbPort = Number(config.tidbPort || process.env.TIDB_PORT) || 4000
+  const tidbDatabase = config.tidbDatabase || process.env.TIDB_DATABASE || 'kyodb_system'
+  const tidbSslCa = config.tidbSslCa || process.env.TIDB_SSL_CA
+
+  if (!tidbHost || !tidbUser) {
     return null
   }
 
   if (!pool) {
-    const sslConfig: mysql.SslOptions = config.tidbSslCa
-      ? { ca: config.tidbSslCa, minVersion: 'TLSv1.2', rejectUnauthorized: true }
+    const sslConfig: mysql.SslOptions = tidbSslCa
+      ? { ca: tidbSslCa, minVersion: 'TLSv1.2', rejectUnauthorized: true }
       : { minVersion: 'TLSv1.2', rejectUnauthorized: true }
 
     pool = mysql.createPool({
-      host: config.tidbHost,
-      port: config.tidbPort || 4000,
-      user: config.tidbUser,
-      password: config.tidbPassword,
-      database: config.tidbDatabase || 'kyodb_system',
+      host: tidbHost,
+      port: tidbPort,
+      user: tidbUser,
+      password: tidbPassword,
+      database: tidbDatabase,
       ssl: sslConfig,
       waitForConnections: true,
       connectionLimit: 10,
@@ -40,10 +52,19 @@ export function getDbPool(): mysql.Pool | null {
 }
 
 export async function testTiDbConnection(): Promise<ConnectionHealth> {
-  const config = useRuntimeConfig()
+  let config: any = {}
+  try {
+    config = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : {}
+  } catch {
+    config = {}
+  }
+
+  const tidbHost = config.tidbHost || process.env.TIDB_HOST
+  const tidbUser = config.tidbUser || process.env.TIDB_USER
+  const tidbDatabase = config.tidbDatabase || process.env.TIDB_DATABASE || 'kyodb_system'
   const lastChecked = new Date().toISOString()
 
-  if (!config.tidbHost || !config.tidbUser) {
+  if (!tidbHost || !tidbUser) {
     return {
       connected: false,
       service: 'tidb',
@@ -79,8 +100,8 @@ export async function testTiDbConnection(): Promise<ConnectionHealth> {
         latencyMs,
         version: versionStr,
         details: {
-          host: config.tidbHost,
-          database: config.tidbDatabase || 'kyodb_system',
+          host: tidbHost,
+          database: tidbDatabase,
           serverTime: rows[0]?.server_time
         },
         lastChecked

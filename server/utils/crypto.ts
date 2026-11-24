@@ -65,3 +65,36 @@ export function hashToken(token: string): string {
 export function generateUUID(): string {
   return crypto.randomUUID()
 }
+
+/**
+ * Encrypt arbitrary secret (such as TiDB passwords) using AES-256-GCM
+ */
+export function encryptSecret(plainText: string, secretKey?: string): string {
+  const keySecret = secretKey || process.env.SESSION_SECRET || 'kyodb-secure-key-default-salt-32'
+  const key = crypto.createHash('sha256').update(keySecret).digest()
+  const iv = crypto.randomBytes(12)
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+  let encrypted = cipher.update(plainText, 'utf8', 'hex')
+  encrypted += cipher.final('hex')
+  const tag = cipher.getAuthTag().toString('hex')
+  return `${iv.toString('hex')}:${tag}:${encrypted}`
+}
+
+/**
+ * Decrypt AES-256-GCM encrypted secret
+ */
+export function decryptSecret(cipherText: string, secretKey?: string): string {
+  const parts = cipherText.split(':')
+  if (parts.length !== 3) {
+    throw new Error('Invalid encrypted secret format')
+  }
+  const [ivHex, tagHex, encryptedHex] = parts
+  const keySecret = secretKey || process.env.SESSION_SECRET || 'kyodb-secure-key-default-salt-32'
+  const key = crypto.createHash('sha256').update(keySecret).digest()
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(ivHex, 'hex'))
+  decipher.setAuthTag(Buffer.from(tagHex, 'hex'))
+  let decrypted = decipher.update(encryptedHex, 'hex', 'utf8')
+  decrypted += decipher.final('utf8')
+  return decrypted
+}
+

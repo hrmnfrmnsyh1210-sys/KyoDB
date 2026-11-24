@@ -1,7 +1,8 @@
 import { dropTable } from '../../../../../services/database.service'
 
 export default defineEventHandler(async (event) => {
-  if (!event.context.admin) {
+  const user = event.context.user || event.context.admin
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -16,8 +17,9 @@ export default defineEventHandler(async (event) => {
   const result = await dropTable(
     databaseName,
     tableName,
-    event.context.admin.id,
-    clientIp
+    user.id,
+    clientIp,
+    user.id
   )
 
   return result

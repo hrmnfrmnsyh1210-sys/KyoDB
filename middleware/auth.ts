@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // Public accessible routes
-  const publicRoutes = ['/', '/login', '/docs']
+  const publicRoutes = ['/', '/login', '/register', '/docs']
   const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/docs')
 
   // If user is not authenticated and trying to access protected route, redirect to login
@@ -18,8 +18,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
     })
   }
 
-  // If user is authenticated and navigating to login, redirect to dashboard
-  if (auth.isAuthenticated.value && to.path === '/login') {
-    return navigateTo('/dashboard')
+  const role = auth.user.value?.role
+
+  // If authenticated and going to login/register → redirect based on role
+  if (auth.isAuthenticated.value && (to.path === '/login' || to.path === '/register')) {
+    return navigateTo(role === 'admin' ? '/dashboard' : '/app')
+  }
+
+  // Admin-only routes — block public users
+  const adminOnlyPrefixes = ['/dashboard', '/projects', '/monitoring', '/storage']
+  const isAdminRoute = adminOnlyPrefixes.some((p) => to.path === p || to.path.startsWith(p + '/'))
+  if (auth.isAuthenticated.value && isAdminRoute && role !== 'admin') {
+    return navigateTo('/app')
   }
 })

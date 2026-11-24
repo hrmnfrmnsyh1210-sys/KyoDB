@@ -160,7 +160,7 @@
 import { FolderKanban, Plus, RefreshCw, Search, Activity, Database, HardDrive } from '@lucide/vue'
 import type { Project } from '~/types'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
 
 const { projects, isLoading, fetchProjects } = useProjects()
 const searchQuery = ref('')

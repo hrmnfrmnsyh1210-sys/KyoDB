@@ -13,6 +13,15 @@
 
       <div class="flex items-center gap-2.5">
         <button
+          v-if="activeTab === 'tidb'"
+          class="btn-forest inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold shadow-xs"
+          @click="openAddConnectionModal"
+        >
+          <Plus class="h-3.5 w-3.5" />
+          <span>Add TiDB Connection</span>
+        </button>
+
+        <button
           v-if="activeTab === 'apikeys'"
           class="btn-forest inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold shadow-xs"
           @click="openCreateKeyModal"
@@ -27,6 +36,17 @@
     <div class="flex items-center gap-1 bg-neutral-200/60 p-1 rounded-full w-fit">
       <button
         class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
+        :class="activeTab === 'tidb' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-600 hover:text-neutral-900'"
+        @click="activeTab = 'tidb'"
+      >
+        <Database class="w-3.5 h-3.5" :class="activeTab === 'tidb' ? 'text-[#144e35]' : ''" />
+        <span>TiDB Connections</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-100 font-mono">{{ connections.length }}</span>
+      </button>
+
+      <button
+        v-if="isAdmin"
+        class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
         :class="activeTab === 'apikeys' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-600 hover:text-neutral-900'"
         @click="activeTab = 'apikeys'"
       >
@@ -36,6 +56,7 @@
       </button>
 
       <button
+        v-if="isAdmin"
         class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
         :class="activeTab === 'system' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-600 hover:text-neutral-900'"
         @click="activeTab = 'system'"
@@ -43,6 +64,142 @@
         <ShieldCheck class="w-3.5 h-3.5" :class="activeTab === 'system' ? 'text-[#144e35]' : ''" />
         <span>Security &amp; Cloud Config</span>
       </button>
+    </div>
+
+    <!-- TAB 0: TIDB DATABASE CONNECTIONS -->
+    <div v-if="activeTab === 'tidb'" class="space-y-5">
+      <!-- Info Callout Banner -->
+      <div class="donezo-card p-4 bg-emerald-50/50 border border-emerald-200/60 flex items-start gap-3 text-xs text-neutral-700">
+        <Database class="w-5 h-5 text-[#144e35] shrink-0 mt-0.5" />
+        <div>
+          <span class="font-bold text-neutral-900 block mb-0.5">TiDB Cloud Cluster Management</span>
+          <p class="text-neutral-600 leading-relaxed">
+            Enter your TiDB host, port, username, password, and database to manage tables, run queries, and browse records from this web app.
+            Credentials are encrypted with AES-256-GCM and communication uses TLS v1.2+.
+          </p>
+        </div>
+      </div>
+
+      <!-- Connections Table Card -->
+      <div class="donezo-card overflow-hidden">
+        <div class="flex items-center justify-between p-4 border-b border-neutral-100 bg-neutral-50/50">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-neutral-900">Configured TiDB Databases</h3>
+            <span class="text-xs text-neutral-400">({{ connections.length }} configured)</span>
+          </div>
+
+          <button
+            class="p-1.5 text-neutral-400 hover:text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
+            title="Refresh Connections"
+            @click="fetchConnections"
+          >
+            <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': isUserDbLoading }" />
+          </button>
+        </div>
+
+        <div v-if="isUserDbLoading && connections.length === 0" class="p-8 text-center text-xs text-neutral-400">
+          <RefreshCw class="w-6 h-6 animate-spin mx-auto text-[#144e35] mb-2" />
+          Loading database connections...
+        </div>
+
+        <div v-else-if="connections.length === 0" class="p-12 text-center">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-[#144e35] flex items-center justify-center mx-auto mb-3 shadow-xs">
+            <Database class="w-6 h-6" />
+          </div>
+          <h4 class="text-base font-bold text-neutral-900">No TiDB Connections Configured</h4>
+          <p class="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
+            Connect your TiDB Cloud database by entering your host, port, user, password, and database name.
+          </p>
+          <button
+            class="btn-forest mt-4 inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold"
+            @click="openAddConnectionModal"
+          >
+            <Plus class="w-3.5 h-3.5" />
+            <span>Add TiDB Connection</span>
+          </button>
+        </div>
+
+        <div v-else class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-neutral-50/70 border-b border-neutral-100 text-neutral-500 font-semibold uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="py-3 px-4">Connection Name</th>
+                <th class="py-3 px-4">Host : Port</th>
+                <th class="py-3 px-4">User</th>
+                <th class="py-3 px-4">Database</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Created At</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+              <tr v-for="conn in connections" :key="conn.id" class="hover:bg-neutral-50/60 transition-colors">
+                <td class="py-3 px-4 font-bold text-neutral-900">
+                  <div class="flex items-center gap-2">
+                    <Database class="w-3.5 h-3.5 text-[#144e35]" />
+                    <span>{{ conn.name }}</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 font-mono text-neutral-700 text-[11px]">
+                  {{ conn.host }}:{{ conn.port }}
+                </td>
+                <td class="py-3 px-4 font-mono text-neutral-700 text-[11px]">
+                  {{ conn.username }}
+                </td>
+                <td class="py-3 px-4 font-mono text-neutral-900 font-semibold text-[11px]">
+                  {{ conn.database }}
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    v-if="conn.isDefault"
+                    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    Active Default
+                  </span>
+                  <button
+                    v-else
+                    class="text-[11px] font-semibold text-neutral-500 hover:text-[#144e35] hover:underline"
+                    @click="handleActivateConnection(conn.id)"
+                  >
+                    Set Active
+                  </button>
+                </td>
+                <td class="py-3 px-4 text-neutral-500 font-mono text-[11px] whitespace-nowrap">
+                  {{ formatDate(conn.createdAt) }}
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button
+                      class="p-1 text-neutral-400 hover:text-amber-600 rounded transition-colors"
+                      title="Test Connection"
+                      :disabled="testingConnId === conn.id"
+                      @click="handleTestStoredConnection(conn)"
+                    >
+                      <RefreshCw v-if="testingConnId === conn.id" class="w-3.5 h-3.5 animate-spin" />
+                      <Zap v-else class="w-3.5 h-3.5 text-amber-500" />
+                    </button>
+                    <button
+                      class="p-1 text-neutral-400 hover:text-neutral-700 rounded transition-colors"
+                      title="Edit Connection"
+                      @click="openEditConnectionModal(conn)"
+                    >
+                      <Edit3 class="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      class="p-1 text-neutral-400 hover:text-rose-600 rounded transition-colors"
+                      title="Delete Connection"
+                      @click="handleDeleteConnection(conn)"
+                    >
+                      <Trash2 class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 1: API KEYS MANAGEMENT -->
@@ -418,6 +575,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Connect TiDB Modal -->
+    <DatabaseConnectTiDbModal
+      :is-open="isTiDbModalOpen"
+      :edit-connection="editingConnection"
+      @close="isTiDbModalOpen = false"
+      @saved="handleConnectionSaved"
+    />
   </div>
 </template>
 
@@ -433,22 +598,83 @@ import {
   Cloud,
   X,
   Copy,
-  Check
+  Check,
+  Edit3,
+  Zap
 } from '@lucide/vue'
-import type { ApiKey, CreateApiKeyResponse } from '~/types'
+import type { ApiKey, CreateApiKeyResponse, UserDatabaseConnection } from '~/types'
 
 definePageMeta({ middleware: 'auth' })
 
 const auth = useAuth()
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
 const { projects, fetchProjects } = useProjects()
 const { apiKeys, isLoading, fetchApiKeys, createApiKey, revokeApiKey, deleteApiKey } = useApiKeys()
+const {
+  connections,
+  isLoading: isUserDbLoading,
+  fetchConnections,
+  deleteConnection,
+  activateConnection,
+  testConnection
+} = useUserDatabases()
 
-const activeTab = ref<'apikeys' | 'system'>('apikeys')
+const activeTab = ref<'tidb' | 'apikeys' | 'system'>('tidb')
 const isCreateModalOpen = ref(false)
 const isSubmittingKey = ref(false)
 const createError = ref<string | null>(null)
 const revealedKey = ref<CreateApiKeyResponse | null>(null)
 const hasCopiedKey = ref(false)
+
+// TiDB Connections Modal & Actions
+const isTiDbModalOpen = ref(false)
+const editingConnection = ref<UserDatabaseConnection | null>(null)
+const testingConnId = ref<string | null>(null)
+
+const openAddConnectionModal = () => {
+  editingConnection.value = null
+  isTiDbModalOpen.value = true
+}
+
+const openEditConnectionModal = (conn: UserDatabaseConnection) => {
+  editingConnection.value = conn
+  isTiDbModalOpen.value = true
+}
+
+const handleConnectionSaved = async () => {
+  await fetchConnections()
+}
+
+const handleActivateConnection = async (id: string) => {
+  await activateConnection(id)
+}
+
+const handleDeleteConnection = async (conn: UserDatabaseConnection) => {
+  if (confirm(`Are you sure you want to delete TiDB connection "${conn.name}"?`)) {
+    await deleteConnection(conn.id)
+  }
+}
+
+const handleTestStoredConnection = async (conn: UserDatabaseConnection) => {
+  testingConnId.value = conn.id
+  try {
+    const res = await testConnection({
+      host: conn.host,
+      port: conn.port,
+      username: conn.username,
+      database: conn.database,
+      sslCa: conn.sslCa || undefined,
+      connectionId: conn.id
+    })
+    if (res.connected) {
+      alert(`Connection to ${conn.name} succeeded! (${res.latencyMs}ms, TiDB ${res.version})`)
+    } else {
+      alert(`Connection to ${conn.name} failed: ${res.error}`)
+    }
+  } finally {
+    testingConnId.value = null
+  }
+}
 
 const availablePermissions = [
   'databases:read',
@@ -538,6 +764,7 @@ const formatDate = (isoStr?: string) => {
 
 onMounted(async () => {
   await Promise.all([
+    fetchConnections(),
     fetchApiKeys(),
     fetchProjects()
   ])

@@ -4,7 +4,9 @@ import {
   verifyPassword,
   generateSecureToken,
   hashToken,
-  generateUUID
+  generateUUID,
+  encryptSecret,
+  decryptSecret
 } from '../server/utils/crypto'
 
 describe('Crypto & Security Utilities', () => {
@@ -45,5 +47,26 @@ describe('Crypto & Security Utilities', () => {
     const uuid = generateUUID()
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
     expect(uuid).toMatch(uuidRegex)
+  })
+
+  it('should encrypt and decrypt secrets using AES-256-GCM', () => {
+    const secret = 'TiDBCloudPassword@2026!'
+    const encrypted = encryptSecret(secret)
+
+    expect(encrypted).toBeDefined()
+    expect(encrypted).not.toBe(secret)
+    expect(encrypted.split(':')).toHaveLength(3) // iv:tag:ciphertext
+
+    const decrypted = decryptSecret(encrypted)
+    expect(decrypted).toBe(secret)
+
+    // With custom secret key
+    const customKey = 'my-custom-super-secret-key-32chrs'
+    const customEnc = encryptSecret(secret, customKey)
+    const customDec = decryptSecret(customEnc, customKey)
+    expect(customDec).toBe(secret)
+
+    // Rejects tampered ciphertext
+    expect(() => decryptSecret('invalid:format')).toThrow()
   })
 })

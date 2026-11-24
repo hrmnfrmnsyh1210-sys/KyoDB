@@ -391,7 +391,7 @@ import {
   Globe
 } from '@lucide/vue'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
 
 const { health, checkHealth } = useSystemHealth()
 

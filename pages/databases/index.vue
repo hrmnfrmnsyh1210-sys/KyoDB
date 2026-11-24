@@ -18,6 +18,14 @@
 
       <div class="flex items-center gap-2">
         <button
+          class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-900/50 transition-all shadow-sm"
+          @click="isConnectModalOpen = true"
+        >
+          <Zap class="h-3.5 w-3.5 text-emerald-400" />
+          <span>{{ activeConnection ? 'TiDB Credentials' : 'Connect TiDB' }}</span>
+        </button>
+
+        <button
           class="inline-flex items-center gap-1.5 rounded-xl border border-[#3a2410] bg-[#231509] px-3.5 py-2 text-xs font-medium text-warm hover:bg-[#3a2410] hover:text-warm transition-all shadow-sm"
           :disabled="isLoading"
           @click="refreshAll"
@@ -34,6 +42,54 @@
           <span>New Database</span>
         </button>
       </div>
+    </div>
+
+    <!-- Active TiDB Connection Banner -->
+    <div
+      v-if="activeConnection"
+      class="rounded-xl border border-[#2e1c0d] bg-[#1a1007]/80 px-4 py-2.5 flex items-center justify-between text-xs text-muted-warm"
+    >
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Active TiDB: <strong class="text-warm">{{ activeConnection.name }}</strong></span>
+        <span class="font-mono text-[11px] text-[#e8882a] bg-[#231509] px-2 py-0.5 rounded border border-[#3a2410]">
+          {{ activeConnection.username }}@{{ activeConnection.host }}:{{ activeConnection.port }}/{{ activeConnection.database }}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="text-amber-accent hover:underline text-[11px] font-medium"
+        @click="isConnectModalOpen = true"
+      >
+        Change Connection
+      </button>
+    </div>
+
+    <!-- Empty Connection Alert if no connection configured -->
+    <div
+      v-else-if="!isLoading && databases.length === 0"
+      class="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-accent shrink-0">
+          <Database class="w-5 h-5" />
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-warm">Connect Your TiDB Cloud Database</h4>
+          <p class="text-xs text-muted-warm mt-0.5">
+            Enter your TiDB Host, Port, User, Password, and Database name to manage tables, run queries, and browse records.
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn-amber px-5 py-2 text-xs font-semibold shrink-0"
+        @click="isConnectModalOpen = true"
+      >
+        Connect TiDB Now
+      </button>
     </div>
 
     <!-- Main Two-Column Layout -->
@@ -446,6 +502,13 @@
       @close="isDeleteModalOpen = false"
       @confirmed="deleteModalConfig.onConfirmed"
     />
+
+    <DatabaseConnectTiDbModal
+      :is-open="isConnectModalOpen"
+      :edit-connection="activeConnection"
+      @close="isConnectModalOpen = false"
+      @saved="handleConnectionSaved"
+    />
   </div>
 </template>
 
@@ -460,12 +523,20 @@ import {
   Trash2,
   Edit3,
   Download,
-  ShieldAlert
+  ShieldAlert,
+  Zap
 } from '@lucide/vue'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'user-setup'] })
 
 const route = useRoute()
+const {
+  connections,
+  activeConnection,
+  hasConnection,
+  fetchConnections
+} = useUserDatabases()
+
 const {
   databases,
   currentDatabase,
@@ -481,6 +552,8 @@ const {
   fetchTableData,
   deleteRow
 } = useDatabases()
+
+const isConnectModalOpen = ref(false)
 
 const selectedDatabase = ref('')
 const selectedTable = ref('')
@@ -695,7 +768,13 @@ const formatBytes = (bytes?: number) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
 
+const handleConnectionSaved = async () => {
+  await fetchConnections()
+  await refreshAll()
+}
+
 onMounted(async () => {
+  await fetchConnections()
   await fetchDatabases()
   const dbQuery = route.query.db as string
   if (dbQuery && databases.value.some((d) => d.name === dbQuery)) {

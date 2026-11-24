@@ -2,10 +2,48 @@ export interface AdminUser {
   id: string
   username: string
   email: string
+  role?: 'admin' | 'user'
   isActive: boolean
   createdAt: string
   updatedAt: string
 }
+
+export interface UserDatabaseConnection {
+  id: string
+  userId: string
+  name: string
+  host: string
+  port: number
+  username: string
+  database: string
+  sslCa?: string | null
+  isDefault: boolean
+  hasPassword?: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserDatabaseConnectionPayload {
+  name: string
+  host: string
+  port?: number
+  username: string
+  password: string
+  database: string
+  sslCa?: string
+  isDefault?: boolean
+}
+
+export interface TestConnectionPayload {
+  host: string
+  port?: number
+  username: string
+  password?: string
+  database: string
+  sslCa?: string
+  connectionId?: string
+}
+
 
 export interface AdminSession {
   id: string

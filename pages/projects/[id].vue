@@ -418,7 +418,7 @@ import {
 import type { Project } from '~/types'
 
 definePageMeta({
-  middleware: 'auth'
+  middleware: ['auth', 'admin-only']
 })
 
 const route = useRoute()

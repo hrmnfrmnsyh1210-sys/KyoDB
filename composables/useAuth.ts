@@ -11,11 +11,20 @@ export const useAuth = () => {
   const fetchUser = async () => {
     isLoading.value = true
     try {
+      let headers: Record<string, string> | undefined
+      try {
+        if (typeof useRequestHeaders === 'function') {
+          headers = useRequestHeaders(['cookie']) as Record<string, string>
+        }
+      } catch {
+        // Outside Nuxt context (e.g. unit tests)
+      }
+
       const data = await $fetch<{
         authenticated: boolean
         requiresBootstrap?: boolean
         user: AdminUser | null
-      }>('/api/auth/me')
+      }>('/api/auth/me', { headers })
 
       user.value = data.user
       requiresBootstrap.value = !!data.requiresBootstrap
@@ -50,6 +59,28 @@ export const useAuth = () => {
       isLoading.value = false
     }
   }
+
+  const register = async (params: { username: string; email: string; password: string }) => {
+    isLoading.value = true
+    try {
+      const res = await $fetch<{ success: boolean; user: AdminUser }>('/api/auth/register', {
+        method: 'POST',
+        body: params
+      })
+      user.value = res.user
+      isChecked.value = true
+      requiresBootstrap.value = false
+      return { success: true }
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.data?.statusMessage || err.message || 'Registration failed'
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
 
   const bootstrap = async (params: { username: string; email: string; password: string }) => {
     isLoading.value = true
@@ -92,6 +123,7 @@ export const useAuth = () => {
     isAuthenticated,
     fetchUser,
     login,
+    register,
     bootstrap,
     logout
   }

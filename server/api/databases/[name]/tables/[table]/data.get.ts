@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const result = await getTableData(databaseName, tableName, validation.data)
+  const userId = event.context.user?.id || event.context.admin?.id
+  const result = await getTableData(databaseName, tableName, validation.data, userId)
   return {
     success: true,
     data: result

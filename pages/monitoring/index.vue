@@ -404,7 +404,7 @@ import {
 } from '@lucide/vue'
 import type { AuditLogEntry } from '~/types'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
 
 const activeTab = ref<'audit' | 'queries'>('audit')
 const selectedMetadataLog = ref<AuditLogEntry | null>(null)

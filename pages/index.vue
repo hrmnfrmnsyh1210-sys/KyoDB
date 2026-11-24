@@ -76,7 +76,7 @@
 
           <NuxtLink
             v-if="auth.isAuthenticated.value"
-            to="/dashboard"
+            :to="auth.user.value?.role === 'admin' ? '/dashboard' : '/app'"
             class="inline-flex items-center gap-2 px-4.5 py-1.5 rounded-full text-xs font-bold bg-[#00DC82] text-neutral-950 hover:bg-[#00DC82]/90 shadow-[0_0_20px_rgba(0,220,130,0.35)] transition-all"
           >
             <LayoutGrid class="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@
           <!-- Primary CTAs -->
           <div class="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <NuxtLink
-              :to="auth.isAuthenticated.value ? '/dashboard' : '/login'"
+              :to="auth.isAuthenticated.value ? (auth.user.value?.role === 'admin' ? '/dashboard' : '/app') : '/login'"
               class="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-sm font-bold bg-[#00DC82] text-neutral-950 hover:bg-[#00DC82]/90 shadow-[0_0_24px_rgba(0,220,130,0.35)] transition-all hover:scale-102"
             >
               <LayoutGrid v-if="auth.isAuthenticated.value" class="w-4 h-4" />
@@ -504,7 +504,7 @@
 
           <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
             <NuxtLink
-              :to="auth.isAuthenticated.value ? '/dashboard' : '/login'"
+              :to="auth.isAuthenticated.value ? (auth.user.value?.role === 'admin' ? '/dashboard' : '/app') : '/login'"
               class="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-bold bg-[#00DC82] text-neutral-950 hover:bg-[#00DC82]/90 shadow-[0_0_24px_rgba(0,220,130,0.35)] transition-all hover:scale-102"
             >
               <span>{{ auth.isAuthenticated.value ? t.btnDashboard : t.btnBottomLaunch }}</span>

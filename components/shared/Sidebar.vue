@@ -5,11 +5,11 @@
   >
     <!-- Brand Logo & Header (Height 64px / h-16 matches Navbar perfectly) -->
     <div class="flex items-center justify-between h-16 px-5 border-b border-neutral-100 shrink-0">
-      <NuxtLink to="/dashboard" class="flex items-center gap-2 group">
+      <NuxtLink :to="isAdmin ? '/dashboard' : '/app'" class="flex items-center gap-2 group">
         <!-- Official KyoDB Brand Logo (Precision Vector) -->
         <KyoLogo variant="light" size="md" />
         <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
-          v1.4
+          {{ isAdmin ? 'v1.4' : 'Cloud' }}
         </span>
       </NuxtLink>
 
@@ -109,7 +109,9 @@
 
     <!-- Bottom Widget: Dedicated status card -->
     <div class="p-3.5 border-t border-neutral-100 bg-neutral-50/60 shrink-0">
+      <!-- Admin bottom card -->
       <div
+        v-if="isAdmin"
         class="rounded-2xl p-3.5 text-white relative overflow-hidden shadow-xs"
         style="background: radial-gradient(circle at 100% 0%, #1e6b48 0%, #0c2b1d 85%);"
       >
@@ -140,6 +142,39 @@
           Explore Storage →
         </NuxtLink>
       </div>
+
+      <!-- User bottom card -->
+      <div
+        v-else
+        class="rounded-2xl p-3.5 text-white relative overflow-hidden shadow-xs"
+        :style="activeConnection ? 'background: radial-gradient(circle at 100% 0%, #1e6b48 0%, #0c2b1d 85%);' : 'background: radial-gradient(circle at 100% 0%, #b45309 0%, #451a03 85%);'"
+      >
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center bg-white/15">
+              <Database class="w-3.5 h-3.5 text-white" />
+            </div>
+            <span class="text-xs font-bold text-white truncate max-w-[120px]">
+              {{ activeConnection ? activeConnection.name : 'No TiDB Connected' }}
+            </span>
+          </div>
+          <span
+            class="w-2 h-2 rounded-full"
+            :class="activeConnection ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"
+          ></span>
+        </div>
+
+        <p class="text-[11px] text-white/75 leading-tight mb-3">
+          {{ activeConnection ? `${activeConnection.host}:${activeConnection.port}` : 'Connect your TiDB to browse tables & queries.' }}
+        </p>
+
+        <NuxtLink
+          :to="activeConnection ? '/settings' : '/app?connect=1'"
+          class="block w-full py-1.5 px-3 rounded-full text-center text-xs font-semibold bg-white/15 hover:bg-white/25 text-white backdrop-blur-xs transition-all"
+        >
+          {{ activeConnection ? 'Manage TiDB →' : 'Connect TiDB Now →' }}
+        </NuxtLink>
+      </div>
     </div>
   </aside>
 </template>
@@ -163,25 +198,52 @@ defineEmits<{ (e: 'close'): void }>()
 
 const route = useRoute()
 const auth = useAuth()
+const { activeConnection, fetchConnections } = useUserDatabases()
+
+onMounted(async () => {
+  if (auth.user.value && auth.user.value.role !== 'admin') {
+    await fetchConnections().catch(() => {})
+  }
+})
+
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
 
 const isActiveRoute = (path: string) => {
   if (path === '/dashboard') return route.path === '/dashboard'
-  return route.path === path || (path !== '/dashboard' && route.path.startsWith(path) && path.length > 1)
+  if (path === '/app') return route.path === '/app'
+  return route.path === path || (path !== '/dashboard' && path !== '/app' && route.path.startsWith(path) && path.length > 1)
 }
 
-const primaryNavigation = [
-  { name: 'Dashboard',     to: '/dashboard', icon: LayoutGrid },
-  { name: 'Projects',      to: '/projects',   icon: FolderKanban, badge: 'Live' },
-  { name: 'Databases',     to: '/databases',  icon: Database },
-  { name: 'SQL Editor',    to: '/sql-editor', icon: Terminal },
-  { name: 'Cloud Storage', to: '/storage',    icon: HardDrive },
-]
+const primaryNavigation = computed(() => {
+  if (isAdmin.value) {
+    return [
+      { name: 'Dashboard',     to: '/dashboard', icon: LayoutGrid },
+      { name: 'Projects',      to: '/projects',   icon: FolderKanban, badge: 'Live' },
+      { name: 'Databases',     to: '/databases',  icon: Database },
+      { name: 'SQL Editor',    to: '/sql-editor', icon: Terminal },
+      { name: 'Cloud Storage', to: '/storage',    icon: HardDrive },
+    ]
+  }
+  return [
+    { name: 'Workspace',     to: '/app',        icon: LayoutGrid },
+    { name: 'Databases',     to: '/databases',  icon: Database },
+    { name: 'SQL Editor',    to: '/sql-editor', icon: Terminal },
+  ]
+})
 
-const secondaryNavigation = [
-  { name: 'Monitoring',    to: '/monitoring', icon: Activity },
-  { name: 'Settings',      to: '/settings',   icon: Settings },
-  { name: 'Documentation', to: '/docs',       icon: BookOpen },
-]
+const secondaryNavigation = computed(() => {
+  if (isAdmin.value) {
+    return [
+      { name: 'Monitoring',    to: '/monitoring', icon: Activity },
+      { name: 'Settings',      to: '/settings',   icon: Settings },
+      { name: 'Documentation', to: '/docs',       icon: BookOpen },
+    ]
+  }
+  return [
+    { name: 'TiDB Settings', to: '/settings',   icon: Settings },
+    { name: 'Documentation', to: '/docs',       icon: BookOpen },
+  ]
+})
 
 const handleLogout = async () => {
   await auth.logout()

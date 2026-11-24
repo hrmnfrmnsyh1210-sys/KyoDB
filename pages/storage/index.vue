@@ -572,7 +572,7 @@ import DeleteConfirmModal from '~/components/storage/DeleteConfirmModal.vue'
 import { formatBytes } from '~/server/validators/storage.validator'
 import type { StorageItem, StorageListResponse, Project } from '~/types'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
 
 const route = useRoute()
 const router = useRouter()

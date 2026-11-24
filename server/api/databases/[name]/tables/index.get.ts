@@ -6,7 +6,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Database name is required' })
   }
 
-  const tables = await listTablesForDatabase(name)
+  const userId = event.context.user?.id || event.context.admin?.id
+  const tables = await listTablesForDatabase(name, userId)
   return {
     success: true,
     data: tables
