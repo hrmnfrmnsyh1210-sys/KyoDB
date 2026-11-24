@@ -451,6 +451,35 @@ export async function validateSessionToken(rawToken: string): Promise<AdminUser 
 }
 
 /**
+ * Retrieve user by ID
+ */
+export async function getUserById(userId: string): Promise<AdminUser | null> {
+  if (!userId) return null
+  const pool = getDbPool()
+  if (pool) {
+    try {
+      const [rows] = await pool.execute<any[]>(
+        'SELECT id, username, email, is_active, role, created_at, updated_at FROM admin_users WHERE id = ? LIMIT 1',
+        [userId]
+      )
+      if (rows.length > 0) {
+        const row = rows[0]
+        return {
+          id: row.id,
+          username: row.username,
+          email: row.email,
+          role: row.role || 'user',
+          isActive: Boolean(row.is_active),
+          createdAt: new Date(row.created_at).toISOString(),
+          updatedAt: new Date(row.updated_at).toISOString()
+        }
+      }
+    } catch {}
+  }
+  return inMemoryStore.admins.find((a) => a.id === userId) || null
+}
+
+/**
  * Revoke session by raw token
  */
 export async function revokeSession(rawToken: string, adminId?: string): Promise<void> {

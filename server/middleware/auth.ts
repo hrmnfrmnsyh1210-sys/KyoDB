@@ -4,10 +4,15 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, 'kyodb_session')
 
   if (token) {
-    const admin = await validateSessionToken(token)
-    if (admin) {
-      event.context.admin = admin
-      event.context.user = admin
+    const sessionUser = await validateSessionToken(token)
+    if (sessionUser) {
+      if (sessionUser.role === 'admin') {
+        event.context.admin = sessionUser
+        event.context.user = null
+      } else {
+        event.context.user = sessionUser
+        event.context.admin = null
+      }
     }
   }
 

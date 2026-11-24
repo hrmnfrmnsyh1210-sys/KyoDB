@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise'
 import { createError } from 'h3'
 import { getDbPool } from './db.service'
+import { getUserById } from './auth.service'
 import { generateUUID, encryptSecret, decryptSecret } from '../utils/crypto'
 import { logAudit } from './audit.service'
 import type {
@@ -553,32 +554,40 @@ export async function setDefaultUserConnection(userId: string, id: string): Prom
 }
 
 /**
- * Get active connection pool for a user, or fall back to system pool
+ * Get active connection pool for a user, or fall back to system pool for admin
  */
 export async function getDbPoolForUser(userId?: string): Promise<mysql.Pool | null> {
+  // If no userId is passed, caller is admin -> return system owner's personal pool
   if (!userId) {
     return getDbPool()
   }
 
-  // 1. Fetch user's active or default TiDB connection
-  const connections = await getUserConnections(userId)
-  const activeConn = connections.find((c) => c.isDefault) || connections[0]
-
-  if (!activeConn) {
-    // If user has not configured any personal TiDB connection, check if system pool is available
+  // Check if userId belongs to admin -> return system owner's personal pool
+  const user = await getUserById(userId)
+  if (user && user.role === 'admin') {
     return getDbPool()
   }
 
-  // 2. Check if pool is already cached in memory
+  // Caller is a PUBLIC USER -> fetch ONLY their own connection
+  const connections = await getUserConnections(userId)
+  const activeConn = connections.find((c) => c.isDefault) || connections[0]
+
+  // IMPORTANT SECURITY: If public user has no connection configured, return null!
+  // NEVER leak or fall back to the owner's personal system pool!
+  if (!activeConn) {
+    return null
+  }
+
+  // Check if pool is already cached in memory
   const cachedPool = userPools.get(activeConn.id)
   if (cachedPool) {
     return cachedPool
   }
 
-  // 3. Decrypt password and create pool
+  // Decrypt password and create pool
   const connDetails = await getUserConnectionWithSecret(activeConn.id, userId)
   if (!connDetails) {
-    return getDbPool()
+    return null
   }
 
   const sslConfig: mysql.SslOptions = connDetails.ssl_ca

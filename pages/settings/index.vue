@@ -13,7 +13,7 @@
 
       <div class="flex items-center gap-2.5">
         <button
-          v-if="activeTab === 'tidb'"
+          v-if="!isAdmin && activeTab === 'tidb'"
           class="btn-forest inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold shadow-xs"
           @click="openAddConnectionModal"
         >
@@ -22,7 +22,7 @@
         </button>
 
         <button
-          v-if="activeTab === 'apikeys'"
+          v-if="isAdmin && activeTab === 'apikeys'"
           class="btn-forest inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold shadow-xs"
           @click="openCreateKeyModal"
         >
@@ -34,7 +34,9 @@
 
     <!-- Tab Switcher -->
     <div class="flex items-center gap-1 bg-neutral-200/60 p-1 rounded-full w-fit">
+      <!-- TiDB Connections (Public Users Only) -->
       <button
+        v-if="!isAdmin"
         class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
         :class="activeTab === 'tidb' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-600 hover:text-neutral-900'"
         @click="activeTab = 'tidb'"
@@ -44,6 +46,7 @@
         <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-100 font-mono">{{ connections.length }}</span>
       </button>
 
+      <!-- Project API Keys (Admin Only) -->
       <button
         v-if="isAdmin"
         class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
@@ -55,6 +58,7 @@
         <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-100 font-mono">{{ apiKeys.length }}</span>
       </button>
 
+      <!-- Security & Cloud Config (Admin Only) -->
       <button
         v-if="isAdmin"
         class="px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2"
@@ -619,7 +623,19 @@ const {
   testConnection
 } = useUserDatabases()
 
-const activeTab = ref<'tidb' | 'apikeys' | 'system'>('tidb')
+const activeTab = ref<'tidb' | 'apikeys' | 'system'>(isAdmin.value ? 'apikeys' : 'tidb')
+
+watch(
+  isAdmin,
+  (val) => {
+    if (val && activeTab.value === 'tidb') {
+      activeTab.value = 'apikeys'
+    } else if (!val && activeTab.value !== 'tidb') {
+      activeTab.value = 'tidb'
+    }
+  },
+  { immediate: true }
+)
 const isCreateModalOpen = ref(false)
 const isSubmittingKey = ref(false)
 const createError = ref<string | null>(null)

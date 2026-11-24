@@ -18,6 +18,7 @@
 
       <div class="flex items-center gap-2">
         <button
+          v-if="!isAdmin"
           class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-900/50 transition-all shadow-sm"
           @click="isConnectModalOpen = true"
         >
@@ -44,9 +45,9 @@
       </div>
     </div>
 
-    <!-- Active TiDB Connection Banner -->
+    <!-- Active TiDB Connection Banner (Public Users Only) -->
     <div
-      v-if="activeConnection"
+      v-if="!isAdmin && activeConnection"
       class="rounded-xl border border-[#2e1c0d] bg-[#1a1007]/80 px-4 py-2.5 flex items-center justify-between text-xs text-muted-warm"
     >
       <div class="flex items-center gap-2.5">
@@ -66,9 +67,9 @@
       </button>
     </div>
 
-    <!-- Empty Connection Alert if no connection configured -->
+    <!-- Empty Connection Alert if no connection configured (Public Users Only) -->
     <div
-      v-else-if="!isLoading && databases.length === 0"
+      v-else-if="!isAdmin && !isLoading && databases.length === 0"
       class="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
     >
       <div class="flex items-center gap-3">
@@ -529,6 +530,8 @@ import {
 
 definePageMeta({ middleware: ['auth', 'user-setup'] })
 
+const auth = useAuth()
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
 const route = useRoute()
 const {
   connections,

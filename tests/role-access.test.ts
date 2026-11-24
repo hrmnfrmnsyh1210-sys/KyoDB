@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { registerUser, validateSessionToken } from '../server/services/auth.service'
+import { getDbPoolForUser } from '../server/services/user-db.service'
 
 describe('Role-based Access & Session Verification', () => {
   it('assigns role: admin to first user, role: user to subsequent users, and returns role in validateSessionToken', async () => {
@@ -66,5 +67,19 @@ describe('Role-based Access & Session Verification', () => {
     expect(canAccessRoute(publicUserRole, '/databases')).toBe(true)
     expect(canAccessRoute(publicUserRole, '/sql-editor')).toBe(true)
     expect(canAccessRoute(publicUserRole, '/settings')).toBe(true)
+  })
+
+  it('guarantees public user cannot access admin system database pool when user has no connection', async () => {
+    const timestamp = Date.now()
+    const pubUser = `isolated_${timestamp}`
+    const { user } = await registerUser({
+      username: pubUser,
+      email: `${pubUser}@example.com`,
+      password: 'StrongUserPass2026!'
+    })
+
+    const pool = await getDbPoolForUser(user.id)
+    // Public user with no configured connections MUST receive null (no leak of admin pool)
+    expect(pool).toBeNull()
   })
 })

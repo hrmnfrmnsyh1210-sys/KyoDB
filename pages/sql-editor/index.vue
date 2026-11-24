@@ -18,8 +18,9 @@
 
       <!-- Controls & Execute Button -->
       <div class="flex items-center gap-3">
-        <!-- Connect TiDB Button -->
+        <!-- Connect TiDB Button (User only) -->
         <button
+          v-if="!isAdmin"
           class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-900/50 transition-all shadow-sm"
           @click="isConnectModalOpen = true"
         >
@@ -64,8 +65,9 @@
     </div>
 
     <!-- SQL Editor Box -->
+    <!-- Alert if no active TiDB connection configured (User only) -->
     <div
-      v-if="!activeConnection && databases.length === 0"
+      v-if="!isAdmin && !activeConnection && databases.length === 0"
       class="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
     >
       <div class="flex items-center gap-3">
@@ -314,6 +316,8 @@ import {
 
 definePageMeta({ middleware: ['auth', 'user-setup'] })
 
+const auth = useAuth()
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
 const route = useRoute()
 const { databases, fetchDatabases } = useDatabases()
 const {
