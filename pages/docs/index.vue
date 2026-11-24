@@ -5,11 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <NuxtLink to="/" class="flex items-center gap-2 group">
-            <img
-              src="/images/logo-transparent.webp"
-              alt="KyoDB"
-              class="h-8 w-auto object-contain transition-transform group-hover:scale-102"
-            />
+            <KyoLogo variant="light" size="sm" />
             <span class="text-xs font-bold text-neutral-800">Docs</span>
             <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200/80">
               v1.4

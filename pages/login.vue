@@ -3,11 +3,7 @@
     <!-- Brand Title & Official Logo -->
     <div class="text-center mb-8">
       <NuxtLink to="/" class="inline-block mb-3">
-        <img
-          src="/images/logo-transparent.webp"
-          alt="KyoDB"
-          class="h-12 w-auto mx-auto object-contain transition-transform hover:scale-105"
-        />
+        <KyoLogo variant="light" size="lg" />
       </NuxtLink>
       <p class="text-xs text-neutral-400">
         Unified management for TiDB Cloud &amp; Cloudflare R2

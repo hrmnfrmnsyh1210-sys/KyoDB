@@ -6,12 +6,8 @@
     <!-- Brand Logo & Header (Height 64px / h-16 matches Navbar perfectly) -->
     <div class="flex items-center justify-between h-16 px-5 border-b border-neutral-100 shrink-0">
       <NuxtLink to="/dashboard" class="flex items-center gap-2 group">
-        <!-- Official KyoDB Brand Logo -->
-        <img
-          src="/images/logo-transparent.webp"
-          alt="KyoDB Logo"
-          class="h-8.5 w-auto max-w-[165px] object-contain transition-transform group-hover:scale-102"
-        />
+        <!-- Official KyoDB Brand Logo (Precision Vector) -->
+        <KyoLogo variant="light" size="md" />
         <span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
           v1.4
         </span>

@@ -34,13 +34,9 @@
     <!-- Navigation Header (Nuxt.com Glassmorphism Navbar) -->
     <header class="sticky top-0 z-40 bg-[#030712]/80 backdrop-blur-xl border-b border-white/5">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        <!-- Brand Logo (Transparent Dark Mode WebP without white box) -->
+        <!-- Brand Logo (Precision Vector SVG) -->
         <NuxtLink to="/" class="flex items-center gap-2.5 group">
-          <img
-            src="/images/logo-dark.webp"
-            alt="KyoDB Logo"
-            class="h-8.5 w-auto object-contain transition-transform group-hover:scale-102"
-          />
+          <KyoLogo variant="dark" size="md" />
           <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-white/5 text-neutral-300 border border-white/10">
             Console
           </span>
@@ -102,26 +98,39 @@
     <!-- Main Content Area -->
     <main class="flex-1">
       <!-- Hero Section -->
-      <section class="relative pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden text-center">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <!-- Tag Pill -->
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-300 mb-8 backdrop-blur-md hover:border-[#00DC82]/40 transition-colors">
-            <span class="w-2 h-2 rounded-full bg-[#00DC82] animate-pulse"></span>
-            <span class="font-semibold text-white">{{ t.heroTag }}</span>
-            <span class="text-neutral-500">•</span>
-            <span class="text-[#00DC82]">TiDB Cloud + Cloudflare R2</span>
-          </div>
+      <section
+        ref="heroSectionRef"
+        class="relative pt-8 pb-16 md:pt-14 md:pb-24 overflow-hidden text-center"
+        @mousemove="handleMouseMove"
+        @mouseleave="handleMouseLeave"
+      >
+        <!-- Interactive Particle Canvas (Responds to Cursor) -->
+        <canvas
+          ref="particleCanvasRef"
+          class="absolute inset-0 pointer-events-none z-0"
+        ></canvas>
 
-          <!-- Hero Headline -->
-          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08] max-w-4xl mx-auto">
-            {{ t.heroTitle1 }}<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00DC82] via-emerald-300 to-teal-200">
-              {{ t.heroTitle2 }}
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <!-- Hero Headline with Staggered Letter-by-Letter Reveal -->
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.12] max-w-4xl mx-auto min-h-[1.9em] sm:min-h-[2.1em] flex flex-col items-center justify-center">
+            <span class="inline-block">
+              {{ displayedTitle1 }}
+              <span
+                v-if="!typingFirstDone"
+                class="inline-block w-[3px] h-[0.85em] align-middle bg-[#00DC82] ml-1 shadow-[0_0_10px_#00DC82] animate-pulse"
+              ></span>
+            </span>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00DC82] via-emerald-300 to-teal-200 inline-block">
+              {{ displayedTitle2 }}
+              <span
+                v-if="typingFirstDone && !typingSecondDone"
+                class="inline-block w-[3px] h-[0.85em] align-middle bg-[#00DC82] ml-1 shadow-[0_0_10px_#00DC82] animate-pulse"
+              ></span>
             </span>
           </h1>
 
           <!-- Hero Subtitle -->
-          <p class="mt-6 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
+          <p class="mt-5 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
             {{ t.heroSubtitle }}
           </p>
 
@@ -517,11 +526,7 @@
     <footer class="bg-[#020412] border-t border-white/5 py-8 text-xs text-neutral-500">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2.5">
-          <img
-            src="/images/logo-dark.webp"
-            alt="KyoDB"
-            class="h-6 w-auto object-contain"
-          />
+          <KyoLogo variant="dark" size="sm" />
           <span>• {{ t.footerTagline }}</span>
         </div>
 
@@ -537,6 +542,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import KyoLogo from '~/components/shared/KyoLogo.vue'
 import {
   LayoutGrid,
   Database,
@@ -557,6 +564,209 @@ definePageMeta({
 
 const auth = useAuth()
 const { currentLocale, isId, toggleLocale } = useLocale()
+
+// Hero Section & Interactive Particle Canvas
+const heroSectionRef = ref<HTMLElement | null>(null)
+const particleCanvasRef = ref<HTMLCanvasElement | null>(null)
+
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  alpha: number
+  baseAlpha: number
+  color: string
+}
+
+const mouse = {
+  x: -1000,
+  y: -1000,
+  active: false
+}
+
+let animFrameId: number | null = null
+let particles: Particle[] = []
+
+const handleMouseMove = (e: MouseEvent) => {
+  if (!heroSectionRef.value) return
+  const rect = heroSectionRef.value.getBoundingClientRect()
+  mouse.x = e.clientX - rect.left
+  mouse.y = e.clientY - rect.top
+  mouse.active = true
+}
+
+const handleMouseLeave = () => {
+  mouse.active = false
+  mouse.x = -1000
+  mouse.y = -1000
+}
+
+function initParticleCanvas() {
+  const canvas = particleCanvasRef.value
+  const container = heroSectionRef.value
+  if (!canvas || !container) return
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const dpr = window.devicePixelRatio || 1
+  let width = container.clientWidth
+  let height = container.clientHeight
+
+  function resizeCanvas() {
+    if (!canvas || !container) return
+    width = container.clientWidth
+    height = container.clientHeight
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    ctx?.scale(dpr, dpr)
+  }
+
+  resizeCanvas()
+  window.addEventListener('resize', resizeCanvas)
+
+  // Spawn reactive floating particles
+  const count = Math.min(Math.floor((width * height) / 10000), 75)
+  const palette = ['#00DC82', '#10B981', '#34D399', '#38BDF8']
+  particles = []
+
+  for (let i = 0; i < count; i++) {
+    const baseAlpha = 0.2 + Math.random() * 0.45
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      radius: 1.2 + Math.random() * 2,
+      alpha: baseAlpha,
+      baseAlpha,
+      color: palette[Math.floor(Math.random() * palette.length)]
+    })
+  }
+
+  function render() {
+    if (!ctx) return
+    ctx.clearRect(0, 0, width, height)
+
+    // Constellation lines between nearby particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x
+        const dy = particles[i].y - particles[j].y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 90) {
+          const lineAlpha = (1 - dist / 90) * 0.15
+          ctx.strokeStyle = `rgba(0, 220, 130, ${lineAlpha})`
+          ctx.lineWidth = 0.6
+          ctx.beginPath()
+          ctx.moveTo(particles[i].x, particles[i].y)
+          ctx.lineTo(particles[j].x, particles[j].y)
+          ctx.stroke()
+        }
+      }
+    }
+
+    // Dynamic interaction on cursor proximity
+    for (const p of particles) {
+      if (mouse.active) {
+        const mdx = p.x - mouse.x
+        const mdy = p.y - mouse.y
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy)
+
+        if (mdist < 140) {
+          // Glow line to cursor
+          const cursorLineAlpha = (1 - mdist / 140) * 0.45
+          ctx.strokeStyle = `rgba(0, 220, 130, ${cursorLineAlpha})`
+          ctx.lineWidth = 1
+          ctx.beginPath()
+          ctx.moveTo(p.x, p.y)
+          ctx.lineTo(mouse.x, mouse.y)
+          ctx.stroke()
+
+          // Magnetic gentle acceleration away from cursor
+          const force = (1 - mdist / 140) * 2.2
+          p.x += (mdx / (mdist || 1)) * force
+          p.y += (mdy / (mdist || 1)) * force
+          p.alpha = Math.min(1, p.baseAlpha + 0.45)
+        } else {
+          p.alpha = p.baseAlpha
+        }
+      } else {
+        p.alpha = p.baseAlpha
+      }
+
+      // Move particle
+      p.x += p.vx
+      p.y += p.vy
+
+      // Bounce at boundary walls
+      if (p.x < 0 || p.x > width) p.vx *= -1
+      if (p.y < 0 || p.y > height) p.vy *= -1
+
+      // Draw particle dot with neon glow
+      ctx.save()
+      ctx.globalAlpha = p.alpha
+      ctx.fillStyle = p.color
+      ctx.shadowColor = p.color
+      ctx.shadowBlur = p.radius * 3.5
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+
+    animFrameId = requestAnimationFrame(render)
+  }
+
+  render()
+}
+
+// Letter-by-Letter Typewriter Animation for Main Headline
+const displayedTitle1 = ref('')
+const displayedTitle2 = ref('')
+const typingFirstDone = ref(false)
+const typingSecondDone = ref(false)
+let typewriterTimer: any = null
+
+function runTypewriter() {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
+  displayedTitle1.value = ''
+  displayedTitle2.value = ''
+  typingFirstDone.value = false
+  typingSecondDone.value = false
+
+  const text1 = t.value.heroTitle1 || ''
+  const text2 = t.value.heroTitle2 || ''
+  let idx1 = 0
+  let idx2 = 0
+
+  function typeChar1() {
+    if (idx1 < text1.length) {
+      displayedTitle1.value += text1[idx1]
+      idx1++
+      typewriterTimer = setTimeout(typeChar1, 26)
+    } else {
+      typingFirstDone.value = true
+      typewriterTimer = setTimeout(typeChar2, 60)
+    }
+  }
+
+  function typeChar2() {
+    if (idx2 < text2.length) {
+      displayedTitle2.value += text2[idx2]
+      idx2++
+      typewriterTimer = setTimeout(typeChar2, 26)
+    } else {
+      typingSecondDone.value = true
+    }
+  }
+
+  typeChar1()
+}
 
 const cliCommand = ref('git clone https://github.com/kyodb/kyodb.git && npm run dev')
 const copiedCli = ref(false)
@@ -736,9 +946,20 @@ const dictionary = {
 
 const t = computed(() => dictionary[currentLocale.value] || dictionary.id)
 
+watch(currentLocale, () => {
+  runTypewriter()
+})
+
 onMounted(async () => {
+  runTypewriter()
+  initParticleCanvas()
   if (!auth.isChecked.value) {
     await auth.fetchUser()
   }
+})
+
+onBeforeUnmount(() => {
+  if (typewriterTimer) clearTimeout(typewriterTimer)
+  if (animFrameId) cancelAnimationFrame(animFrameId)
 })
 </script>
