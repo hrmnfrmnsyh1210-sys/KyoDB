@@ -768,7 +768,7 @@ function runTypewriter() {
   typeChar1()
 }
 
-const cliCommand = ref('git clone https://github.com/kyodb/kyodb.git && npm run dev')
+const cliCommand = ref('git clone https://github.com/hrmnfrmnsyh1210-sys/KyoDB.git && npm run dev')
 const copiedCli = ref(false)
 
 const handleCopyCli = async () => {
