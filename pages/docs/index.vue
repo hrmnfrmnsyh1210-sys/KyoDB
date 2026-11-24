@@ -6,7 +6,7 @@
         <div class="flex items-center gap-3">
           <NuxtLink to="/" class="flex items-center gap-2 group">
             <img
-              src="/images/logo.webp"
+              src="/images/logo-transparent.webp"
               alt="KyoDB"
               class="h-8 w-auto object-contain transition-transform group-hover:scale-102"
             />

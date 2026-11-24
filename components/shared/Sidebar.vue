@@ -8,7 +8,7 @@
       <NuxtLink to="/dashboard" class="flex items-center gap-2 group">
         <!-- Official KyoDB Brand Logo -->
         <img
-          src="/images/logo.webp"
+          src="/images/logo-transparent.webp"
           alt="KyoDB Logo"
           class="h-8.5 w-auto max-w-[165px] object-contain transition-transform group-hover:scale-102"
         />

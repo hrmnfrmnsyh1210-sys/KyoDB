@@ -4,7 +4,7 @@
     <div class="text-center mb-8">
       <NuxtLink to="/" class="inline-block mb-3">
         <img
-          src="/images/logo.webp"
+          src="/images/logo-transparent.webp"
           alt="KyoDB"
           class="h-12 w-auto mx-auto object-contain transition-transform hover:scale-105"
         />
