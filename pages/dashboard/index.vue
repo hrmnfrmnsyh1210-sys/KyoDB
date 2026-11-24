@@ -1,508 +1,371 @@
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-12 font-sans">
-    <!-- Top Ambient Glow (Nuxt.js docs signature radial glow) -->
-    <div
-      class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[320px] -z-10 opacity-60 blur-3xl"
-      style="background: radial-gradient(circle, rgba(0, 220, 130, 0.12) 0%, rgba(20, 78, 53, 0.05) 45%, transparent 70%);"
-    ></div>
-
-    <!-- Header Section (Nuxt Docs Developer Style) -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200/80 pb-5">
+  <div class="space-y-6 max-w-7xl mx-auto">
+    <!-- Dashboard Title & Header Controls (Exact Donezo styling) -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Cluster Online • TiDB 54ms</span>
-          </span>
-          <span class="text-xs text-neutral-400 font-mono">v1.4.0</span>
-        </div>
-
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 flex items-center gap-2.5">
-          <span>Overview Console</span>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
+          Dashboard
         </h1>
-        <p class="text-xs sm:text-sm text-neutral-500 mt-0.5">
-          Real-time metrics, distributed query telemetry, and Cloudflare R2 storage distribution.
+        <p class="text-xs sm:text-sm text-neutral-500 mt-1">
+          Plan, prioritize, and accomplish your database and storage tasks with ease.
         </p>
       </div>
 
-      <!-- Action Buttons (Nuxt Pill Buttons) -->
+      <!-- Header Action Buttons -->
       <div class="flex items-center gap-2.5">
-        <button
-          class="btn-white-pill inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold shadow-xs"
-          :disabled="isLoadingSummary"
-          title="Refresh All Telemetry"
-          @click="loadAllData"
-        >
-          <RefreshCw class="w-3.5 h-3.5 text-neutral-500" :class="{ 'animate-spin': isLoadingSummary }" />
-          <span class="hidden sm:inline">Refresh</span>
-        </button>
-
         <NuxtLink
-          to="/storage"
-          class="btn-white-pill inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold shadow-xs text-neutral-700 hover:text-neutral-900"
+          to="/projects"
+          class="btn-forest inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold shadow-xs"
         >
-          <UploadCloud class="w-3.5 h-3.5 text-neutral-500" />
-          <span>Upload</span>
+          <Plus class="w-4 h-4" />
+          <span>Add Project</span>
         </NuxtLink>
 
         <NuxtLink
           to="/sql-editor"
-          class="btn-white-pill inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold shadow-xs text-neutral-700 hover:text-neutral-900"
+          class="btn-white-pill inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold shadow-xs"
         >
-          <Terminal class="w-3.5 h-3.5 text-neutral-500" />
-          <span>Monaco SQL</span>
-        </NuxtLink>
-
-        <NuxtLink
-          to="/projects"
-          class="btn-forest inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold shadow-xs"
-        >
-          <Plus class="w-3.5 h-3.5" />
-          <span>New Project</span>
+          <Terminal class="w-4 h-4 text-neutral-500" />
+          <span>SQL Query</span>
         </NuxtLink>
       </div>
     </div>
 
-    <!-- Nuxt Bento Grid Section 1: 4 High-Density Stat Cards -->
+    <!-- 4 Top Metric Cards (Donezo layout: 1st card forest green, 3 cards white) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Bento Card 1: Projects & Namespaces -->
-      <div class="rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#144e35]/50 transition-all flex flex-col justify-between group relative overflow-hidden">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-            <FolderKanban class="w-4 h-4 text-[#144e35]" />
-            <span>Active Projects</span>
-          </div>
-          <NuxtLink to="/projects" class="text-neutral-400 hover:text-neutral-900 transition-colors" title="Manage Projects">
-            <ArrowUpRight class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+      <!-- 1. Total Projects (Highlight Forest Green Card) -->
+      <div class="donezo-card-forest p-6 flex flex-col justify-between shadow-xs relative overflow-hidden group min-h-[160px]">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-white/80">Total Projects</span>
+          <NuxtLink to="/projects" class="circle-arrow-btn-white" title="View Projects">
+            <ArrowUpRight class="w-4 h-4" />
           </NuxtLink>
         </div>
 
-        <div class="my-2">
-          <div class="text-3xl font-extrabold font-mono text-neutral-900 tracking-tight">
+        <div class="my-3 flex items-baseline justify-between">
+          <div class="text-4xl font-bold tracking-tight text-white font-mono">
             {{ summary.totalProjects }}
           </div>
-          <div class="text-[11px] text-neutral-500 mt-1 flex items-center gap-1.5">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Isolated Cloud Workspaces</span>
-          </div>
+          <span class="text-xs text-emerald-200/80 font-mono">Active</span>
         </div>
 
-        <div class="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-          <span>Scope</span>
-          <span class="text-neutral-700 font-medium">projects/{slug}/</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-white/15 px-2.5 py-1 rounded-full text-white backdrop-blur-xs">
+            <TrendingUp class="w-3.5 h-3.5 text-emerald-300" />
+            <span>Increased from last month</span>
+          </span>
         </div>
       </div>
 
-      <!-- Bento Card 2: TiDB Databases & Tables -->
-      <div class="rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#144e35]/50 transition-all flex flex-col justify-between group relative overflow-hidden">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-            <Database class="w-4 h-4 text-[#144e35]" />
-            <span>Logical Databases</span>
-          </div>
-          <NuxtLink to="/databases" class="text-neutral-400 hover:text-neutral-900 transition-colors" title="Explore Databases">
-            <ArrowUpRight class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+      <!-- 2. Ended Projects / Logical Databases -->
+      <div class="donezo-card p-6 flex flex-col justify-between shadow-xs group min-h-[160px]">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-neutral-500">Databases</span>
+          <NuxtLink to="/databases" class="circle-arrow-btn" title="View Databases">
+            <ArrowUpRight class="w-4 h-4" />
           </NuxtLink>
         </div>
 
-        <div class="my-2">
-          <div class="text-3xl font-extrabold font-mono text-neutral-900 tracking-tight">
+        <div class="my-3 flex items-baseline justify-between">
+          <div class="text-4xl font-bold tracking-tight text-neutral-900 font-mono">
             {{ summary.totalDatabases }}
           </div>
-          <div class="text-[11px] text-neutral-500 mt-1 flex items-center gap-1.5">
-            <span class="font-mono text-emerald-700 font-semibold">{{ summary.totalTables }}</span>
-            <span>Active Schemas &amp; Tables</span>
-          </div>
+          <span class="text-xs text-neutral-400 font-mono">Logical</span>
         </div>
 
-        <div class="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-          <span>Engine</span>
-          <span class="text-neutral-700 font-medium">TiDB Serverless 8.0</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-1 rounded-full">
+            <Database class="w-3.5 h-3.5 text-[#144e35]" />
+            <span>{{ summary.totalTables }} Tables Active</span>
+          </span>
         </div>
       </div>
 
-      <!-- Bento Card 3: Cloudflare R2 Storage -->
-      <div class="rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#144e35]/50 transition-all flex flex-col justify-between group relative overflow-hidden">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-            <HardDrive class="w-4 h-4 text-[#144e35]" />
-            <span>Storage Objects</span>
-          </div>
-          <NuxtLink to="/storage" class="text-neutral-400 hover:text-neutral-900 transition-colors" title="Open Storage">
-            <ArrowUpRight class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+      <!-- 3. Running Projects / R2 Storage Objects -->
+      <div class="donezo-card p-6 flex flex-col justify-between shadow-xs group min-h-[160px]">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-neutral-500">Storage Files</span>
+          <NuxtLink to="/storage" class="circle-arrow-btn" title="View Storage">
+            <ArrowUpRight class="w-4 h-4" />
           </NuxtLink>
         </div>
 
-        <div class="my-2">
-          <div class="text-3xl font-extrabold font-mono text-neutral-900 tracking-tight">
+        <div class="my-3 flex items-baseline justify-between">
+          <div class="text-4xl font-bold tracking-tight text-neutral-900 font-mono">
             {{ summary.totalFiles }}
           </div>
-          <div class="text-[11px] text-neutral-500 mt-1 flex items-center gap-1.5">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Zero-Egress Direct S3</span>
-          </div>
+          <span class="text-xs text-neutral-400 font-mono">Objects</span>
         </div>
 
-        <div class="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-          <span>Protocol</span>
-          <span class="text-neutral-700 font-medium">AWS SDK Presigned v3</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-1 rounded-full">
+            <HardDrive class="w-3.5 h-3.5 text-[#144e35]" />
+            <span>Direct-to-R2 presigned</span>
+          </span>
         </div>
       </div>
 
-      <!-- Bento Card 4: Cluster Latency & Health -->
-      <div class="rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs hover:border-[#144e35]/50 transition-all flex flex-col justify-between group relative overflow-hidden">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-            <Activity class="w-4 h-4 text-[#144e35]" />
-            <span>Query Roundtrip</span>
-          </div>
-          <NuxtLink to="/monitoring" class="text-neutral-400 hover:text-neutral-900 transition-colors" title="Telemetry Details">
-            <ArrowUpRight class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </NuxtLink>
+      <!-- 4. Pending / Infrastructure Status -->
+      <div class="donezo-card p-6 flex flex-col justify-between shadow-xs group min-h-[160px]">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-neutral-500">Cluster Status</span>
+          <button @click="loadDashboardData" class="circle-arrow-btn" title="Refresh">
+            <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': isLoadingSummary }" />
+          </button>
         </div>
 
-        <div class="my-2">
-          <div class="text-3xl font-extrabold font-mono text-neutral-900 tracking-tight flex items-baseline gap-1">
-            <span>{{ health?.tidb?.latencyMs || 54 }}</span>
-            <span class="text-sm font-normal text-neutral-400">ms</span>
+        <div class="my-3 flex items-baseline justify-between">
+          <div class="text-4xl font-bold tracking-tight text-neutral-900 font-mono">
+            {{ health?.tidb?.latencyMs ? `${health.tidb.latencyMs}ms` : '54ms' }}
           </div>
-          <div class="text-[11px] text-emerald-700 font-medium mt-1 flex items-center gap-1.5">
-            <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600" />
-            <span>Optimal Response Time</span>
-          </div>
+          <span class="text-xs text-emerald-700 font-mono">Latency</span>
         </div>
 
-        <div class="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
-          <span>Security</span>
-          <span class="text-neutral-700 font-medium">TLS v1.2+ Encrypted</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>TiDB &amp; R2 Operational</span>
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- Nuxt Bento Grid Section 2: Developer Workspace (Terminal & Storage Analytics) -->
+    <!-- Middle Section: 3 Columns matching Donezo Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-      <!-- Col Left (7 cols): Nuxt-style Interactive Live Terminal Window -->
-      <div class="lg:col-span-7 rounded-2xl border border-neutral-800 bg-neutral-950 p-5 shadow-lg text-neutral-200 font-mono flex flex-col justify-between overflow-hidden">
-        <div>
-          <!-- Terminal Titlebar (Nuxt docs signature code header) -->
-          <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-              <span class="ml-2 text-xs font-semibold text-neutral-400">tidb-query-engine.internal</span>
-            </div>
-
-            <!-- Terminal Tabs -->
-            <div class="flex items-center gap-1 text-[11px]">
-              <button
-                class="px-2.5 py-1 rounded-md transition-colors"
-                :class="terminalTab === 'queries' ? 'bg-neutral-800 text-white font-bold' : 'text-neutral-400 hover:text-white'"
-                @click="terminalTab = 'queries'"
-              >
-                Live Queries
-              </button>
-              <button
-                class="px-2.5 py-1 rounded-md transition-colors"
-                :class="terminalTab === 'schema' ? 'bg-neutral-800 text-white font-bold' : 'text-neutral-400 hover:text-white'"
-                @click="terminalTab = 'schema'"
-              >
-                Migrations
-              </button>
-              <button
-                class="px-2.5 py-1 rounded-md transition-colors"
-                :class="terminalTab === 'system' ? 'bg-neutral-800 text-white font-bold' : 'text-neutral-400 hover:text-white'"
-                @click="terminalTab = 'system'"
-              >
-                Node Stats
-              </button>
-            </div>
+      <!-- Col 1 (5 cols): Project Analytics Bar Chart & Team Collaboration -->
+      <div class="lg:col-span-5 space-y-5">
+        <!-- Project Analytics (Pill Bar Chart with striped pattern) -->
+        <div class="donezo-card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-sm font-bold text-neutral-900">Project Analytics</h3>
+            <span class="text-[11px] font-medium text-neutral-400">Weekly activity</span>
           </div>
 
-          <!-- Tab Content 1: Live SQL Queries -->
-          <div v-if="terminalTab === 'queries'" class="space-y-2.5 text-xs">
+          <!-- Vertical Pill Bars (Exact Donezo styling) -->
+          <div class="flex items-end justify-between h-44 px-2 pt-6 pb-2">
+            <!-- Sunday (Striped) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-20 rounded-full striped-bar"></div>
+              <span class="text-[11px] font-medium text-neutral-400">S</span>
+            </div>
+
+            <!-- Monday (Dark Forest Green) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-28 rounded-full bg-[#144e35] shadow-xs"></div>
+              <span class="text-[11px] font-medium text-neutral-400">M</span>
+            </div>
+
+            <!-- Tuesday (Mint with Tooltip pill) -->
+            <div class="flex flex-col items-center gap-2 relative">
+              <div class="absolute -top-7 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-neutral-900 text-white shadow-xs">
+                74%
+              </div>
+              <div class="w-7 h-24 rounded-full bg-[#34d399]"></div>
+              <span class="text-[11px] font-medium text-neutral-400">T</span>
+            </div>
+
+            <!-- Wednesday (Full Tall Dark Green) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-36 rounded-full bg-[#0c2a1c] shadow-xs"></div>
+              <span class="text-[11px] font-medium text-neutral-400">W</span>
+            </div>
+
+            <!-- Thursday (Striped) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-18 rounded-full striped-bar"></div>
+              <span class="text-[11px] font-medium text-neutral-400">T</span>
+            </div>
+
+            <!-- Friday (Striped) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-22 rounded-full striped-bar"></div>
+              <span class="text-[11px] font-medium text-neutral-400">F</span>
+            </div>
+
+            <!-- Saturday (Striped) -->
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-7 h-16 rounded-full striped-bar"></div>
+              <span class="text-[11px] font-medium text-neutral-400">S</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Collaboration / Audit Activity List (Donezo style) -->
+        <div class="donezo-card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-neutral-900">Team Collaboration</h3>
+            <NuxtLink to="/monitoring" class="btn-white-pill px-3 py-1 text-[11px] font-medium">
+              + Add Member
+            </NuxtLink>
+          </div>
+
+          <div class="space-y-3.5">
             <div
-              v-for="(q, idx) in recentQueries"
+              v-for="(member, idx) in teamMembers"
               :key="idx"
-              class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-neutral-900/80 border border-neutral-800/80 hover:border-neutral-700 transition-colors"
+              class="flex items-center justify-between py-1 border-b border-neutral-100 last:border-0"
             >
-              <div class="flex items-center gap-2.5 min-w-0">
-                <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
-                  {{ q.queryType || 'SELECT' }}
-                </span>
-                <span class="truncate text-neutral-300 font-mono text-[11px]">
-                  {{ q.sqlQuery || 'SELECT * FROM projects LIMIT 10;' }}
-                </span>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xs"
+                  :style="{ background: member.avatarBg }">
+                  {{ member.initials }}
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-neutral-900">{{ member.name }}</div>
+                  <div class="text-[11px] text-neutral-400 leading-tight">{{ member.role }}</div>
+                </div>
               </div>
 
-              <div class="flex items-center gap-2 shrink-0 text-[10px] text-neutral-400">
-                <span class="text-neutral-500 font-mono">{{ q.databaseName || 'kyodb_system' }}</span>
-                <span class="px-1.5 py-0.5 rounded bg-neutral-800 text-emerald-400 font-bold">
-                  {{ q.executionTimeMs || 12 }}ms
-                </span>
-              </div>
-            </div>
-
-            <div v-if="recentQueries.length === 0" class="py-6 text-center text-neutral-500 text-xs">
-              Waiting for live SQL executions... Run a query in the Monaco SQL Editor.
+              <span
+                class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full capitalize"
+                :class="getStatusBadgeClass(member.status)"
+              >
+                {{ member.status }}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Tab Content 2: Schema Migrations -->
-          <div v-else-if="terminalTab === 'schema'" class="space-y-3 text-xs">
-            <div class="p-3 rounded-xl bg-neutral-900/90 border border-neutral-800">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-neutral-300 font-bold">001_create_kyodb_system.sql</span>
-                <span class="text-[10px] text-emerald-400 font-bold">✓ APPLIED</span>
-              </div>
-              <p class="text-[11px] text-neutral-400 leading-relaxed">
-                Base metadata schema: <code>projects</code>, <code>project_databases</code>, <code>storage_objects</code>, <code>api_keys</code>, <code>audit_logs</code>, <code>query_history</code>.
-              </p>
-            </div>
-
-            <div class="flex items-center justify-between pt-2">
-              <span class="text-neutral-400 text-[11px]">Cluster Migration Engine: Idempotent</span>
-              <button
-                class="btn-forest px-3.5 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5"
-                :disabled="isMigrating"
-                @click="handleRunMigration"
-              >
-                <Play class="w-3 h-3 fill-current" :class="{ 'animate-spin': isMigrating }" />
-                <span>{{ isMigrating ? 'Migrating...' : 'Run Migration' }}</span>
-              </button>
-            </div>
-            <p v-if="migrationMessage" class="text-[11px] text-emerald-400 font-mono">
-              {{ migrationMessage }}
+      <!-- Col 2 (4 cols): Reminders & Project Progress Gauge -->
+      <div class="lg:col-span-4 space-y-5">
+        <!-- Reminders / Quick Action Card (Donezo style) -->
+        <div class="donezo-card p-6 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-medium text-neutral-400 mb-1">Reminders</div>
+            <h3 class="text-sm font-bold text-neutral-900">
+              TiDB Schema Migrations
+            </h3>
+            <p class="text-xs text-neutral-400 mt-1">
+              Time: System Ready · kyodb_system
             </p>
           </div>
 
-          <!-- Tab Content 3: Node Stats -->
-          <div v-else class="space-y-3 text-xs">
-            <div class="grid grid-cols-2 gap-3 text-left">
-              <div class="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <div class="text-[10px] text-neutral-500">NODE RUNTIME</div>
-                <div class="text-sm font-bold text-white font-mono mt-1">{{ sysStats?.nodeVersion || 'v22.x LTS' }}</div>
-              </div>
-              <div class="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <div class="text-[10px] text-neutral-500">UPTIME</div>
-                <div class="text-sm font-bold text-emerald-400 font-mono mt-1">{{ sysStats?.uptimeFormatted || 'Active' }}</div>
-              </div>
-              <div class="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <div class="text-[10px] text-neutral-500">HEAP USED</div>
-                <div class="text-sm font-bold text-white font-mono mt-1">{{ sysStats?.memory?.heapUsedMb || 45.2 }} MB</div>
-              </div>
-              <div class="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <div class="text-[10px] text-neutral-500">PLATFORM / ARCH</div>
-                <div class="text-sm font-bold text-white font-mono mt-1">{{ sysStats?.platform || 'win32' }} ({{ sysStats?.arch || 'x64' }})</div>
-              </div>
+          <div class="mt-5">
+            <button
+              class="btn-forest w-full py-2.5 px-4 text-xs font-semibold flex items-center justify-center gap-2"
+              :disabled="isMigrating"
+              @click="handleRunMigration"
+            >
+              <Play class="w-3.5 h-3.5 fill-current" :class="{ 'animate-spin': isMigrating }" />
+              <span>{{ isMigrating ? 'Applying...' : 'Start Migration' }}</span>
+            </button>
+            <p v-if="migrationMessage" class="text-[11px] text-emerald-700 text-center mt-2 font-mono font-medium">
+              {{ migrationMessage }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Project Progress (Semi-circle Donut Gauge) -->
+        <div class="donezo-card p-6 text-center">
+          <div class="text-left text-sm font-bold text-neutral-900 mb-4">
+            Project Progress
+          </div>
+
+          <!-- Gauge SVG -->
+          <div class="relative w-48 h-28 mx-auto flex items-end justify-center">
+            <svg class="w-44 h-24 overflow-visible" viewBox="0 0 100 50">
+              <!-- Background Arc -->
+              <path
+                d="M 10,50 A 40,40 0 0,1 90,50"
+                fill="none"
+                stroke="#e5e7eb"
+                stroke-width="12"
+                stroke-linecap="round"
+              />
+              <!-- Progress Arc (41% like image) -->
+              <path
+                d="M 10,50 A 40,40 0 0,1 90,50"
+                fill="none"
+                stroke="#144e35"
+                stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="125.66"
+                stroke-dashoffset="65"
+              />
+            </svg>
+
+            <!-- Centered Percentage -->
+            <div class="absolute bottom-0 text-center">
+              <div class="text-2xl font-bold font-mono text-neutral-900">41%</div>
+              <div class="text-[10px] text-neutral-400">Project Ended</div>
+            </div>
+          </div>
+
+          <!-- Legend Pills -->
+          <div class="flex items-center justify-center gap-3 mt-6 text-[11px] font-medium">
+            <div class="flex items-center gap-1.5 text-neutral-700">
+              <span class="w-2 h-2 rounded-full bg-[#144e35]"></span>
+              <span>Completed</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-neutral-700">
+              <span class="w-2 h-2 rounded-full bg-[#34d399]"></span>
+              <span>In Progress</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-neutral-500">
+              <span class="w-2 h-2 rounded-full border border-neutral-300 bg-neutral-100"></span>
+              <span>Pending</span>
             </div>
           </div>
         </div>
-
-        <!-- Terminal Footer Link -->
-        <div class="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] text-neutral-500">
-          <div class="flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span>Auto-logging enabled</span>
-          </div>
-          <NuxtLink to="/monitoring" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
-            <span>View Full Audit Logs</span>
-            <ArrowRight class="w-3 h-3" />
-          </NuxtLink>
-        </div>
       </div>
 
-      <!-- Col Right (5 cols): Real Cloudflare R2 Storage Distribution -->
-      <div class="lg:col-span-5 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs flex flex-col justify-between">
-        <div>
+      <!-- Col 3 (3 cols): Project List & Time Tracker -->
+      <div class="lg:col-span-3 space-y-5">
+        <!-- Project List (Donezo style) -->
+        <div class="donezo-card p-5">
           <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="text-sm font-bold text-neutral-900">Storage Distribution</h3>
-              <p class="text-[11px] text-neutral-500">Cloudflare R2 Bucket Breakdown</p>
-            </div>
-            <NuxtLink to="/storage" class="btn-white-pill px-3 py-1 text-xs font-semibold">
-              Browse Files →
+            <h3 class="text-sm font-bold text-neutral-900">Project</h3>
+            <NuxtLink to="/projects" class="btn-white-pill px-2.5 py-0.5 text-[11px] font-medium">
+              + New
             </NuxtLink>
           </div>
 
-          <!-- Distribution Multi-segment Progress Bar -->
-          <div class="w-full h-3 rounded-full bg-neutral-100 flex overflow-hidden mb-5">
-            <div style="width: 42%;" class="bg-[#144e35] h-full" title="Documents (42%)"></div>
-            <div style="width: 28%;" class="bg-emerald-500 h-full" title="Media & Images (28%)"></div>
-            <div style="width: 18%;" class="bg-amber-400 h-full" title="Database Dumps (18%)"></div>
-            <div style="width: 12%;" class="bg-teal-400 h-full" title="Binary / Other (12%)"></div>
-          </div>
-
-          <!-- Category Legend Cards -->
-          <div class="space-y-2.5 text-xs">
-            <div class="flex items-center justify-between p-2 rounded-xl bg-neutral-50/70 border border-neutral-100">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#144e35]"></span>
-                <span class="font-medium text-neutral-800">Documents (PDF, XLSX, CSV)</span>
-              </div>
-              <span class="font-mono text-neutral-600 font-semibold">42%</span>
-            </div>
-
-            <div class="flex items-center justify-between p-2 rounded-xl bg-neutral-50/70 border border-neutral-100">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span class="font-medium text-neutral-800">Media Assets (Images, Audio, Video)</span>
-              </div>
-              <span class="font-mono text-neutral-600 font-semibold">28%</span>
-            </div>
-
-            <div class="flex items-center justify-between p-2 rounded-xl bg-neutral-50/70 border border-neutral-100">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                <span class="font-medium text-neutral-800">SQL Database Dumps (.sql.gz)</span>
-              </div>
-              <span class="font-mono text-neutral-600 font-semibold">18%</span>
-            </div>
-
-            <div class="flex items-center justify-between p-2 rounded-xl bg-neutral-50/70 border border-neutral-100">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
-                <span class="font-medium text-neutral-800">Binary &amp; Source Code</span>
-              </div>
-              <span class="font-mono text-neutral-600 font-semibold">12%</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Zero Egress Note -->
-        <div class="mt-4 pt-3.5 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-500">
-          <div class="flex items-center gap-1.5 text-emerald-800 font-medium">
-            <ShieldCheck class="w-3.5 h-3.5 text-emerald-600" />
-            <span>Zero Egress Bandwidth Fees</span>
-          </div>
-          <span class="text-neutral-400 font-mono">Cloudflare S3 Engine</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nuxt Bento Grid Section 3: Active Workspaces & Developer Quick Toolkit -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-      <!-- Col Left (8 cols): Real Managed Projects -->
-      <div class="lg:col-span-8 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-sm font-bold text-neutral-900">Application Workspaces</h3>
-            <p class="text-[11px] text-neutral-500">Project environments with scoped databases and R2 buckets</p>
-          </div>
-          <NuxtLink to="/projects" class="btn-forest px-3.5 py-1.5 text-xs font-semibold">
-            + New Project
-          </NuxtLink>
-        </div>
-
-        <!-- Project Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div
-            v-for="p in realProjects.slice(0, 4)"
-            :key="p.id"
-            class="p-4 rounded-xl border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-[#144e35]/60 hover:shadow-xs transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-neutral-900 truncate">{{ p.name }}</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 capitalize">
-                  {{ p.status }}
-                </span>
-              </div>
-              <p class="text-[11px] text-neutral-500 line-clamp-2 mb-3">
-                {{ p.description || 'Dedicated cloud environment with isolated storage and SQL scope.' }}
-              </p>
-            </div>
-
-            <div class="pt-2 border-t border-neutral-200/60 flex items-center justify-between text-[10px] font-mono text-neutral-400">
-              <span class="text-neutral-600 font-semibold truncate max-w-[130px]">
-                {{ p.databaseName ? `db: ${p.databaseName}` : 'No DB attached' }}
-              </span>
-              <NuxtLink :to="`/projects/${p.id}`" class="text-[#144e35] font-semibold hover:underline">
-                Manage →
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div v-if="realProjects.length === 0" class="col-span-2 py-8 text-center text-xs text-neutral-400">
-            No active projects yet. Click "+ New Project" to initialize your first cloud workspace.
-          </div>
-        </div>
-      </div>
-
-      <!-- Col Right (4 cols): Developer Quick Toolkit -->
-      <div class="lg:col-span-4 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs flex flex-col justify-between">
-        <div>
-          <h3 class="text-sm font-bold text-neutral-900 mb-1">Developer Toolkit</h3>
-          <p class="text-[11px] text-neutral-500 mb-4">Fast-track actions for your cloud operations</p>
-
-          <div class="space-y-2.5">
-            <!-- Tool 1: Monaco SQL -->
-            <NuxtLink
-              to="/sql-editor"
-              class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-[#144e35]/60 transition-all group"
+          <div class="space-y-3">
+            <div
+              v-for="(p, idx) in quickProjects"
+              :key="idx"
+              class="flex items-center gap-3 py-1.5 border-b border-neutral-100 last:border-0"
             >
-              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#144e35] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <Terminal class="w-4 h-4" />
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-white" :style="{ background: p.bg }">
+                <component :is="p.icon" class="w-3.5 h-3.5" />
               </div>
               <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-neutral-900 group-hover:text-[#144e35] transition-colors">SQL Query Editor</div>
-                <div class="text-[10px] text-neutral-400">Run queries with guardrails</div>
+                <div class="text-xs font-semibold text-neutral-900 truncate">{{ p.name }}</div>
+                <div class="text-[10px] text-neutral-400">{{ p.due }}</div>
               </div>
-              <ArrowRight class="w-3.5 h-3.5 text-neutral-400 group-hover:translate-x-1 group-hover:text-[#144e35] transition-all" />
-            </NuxtLink>
-
-            <!-- Tool 2: Direct Upload -->
-            <NuxtLink
-              to="/storage"
-              class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-[#144e35]/60 transition-all group"
-            >
-              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#144e35] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <UploadCloud class="w-4 h-4" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-neutral-900 group-hover:text-[#144e35] transition-colors">Direct-to-R2 Upload</div>
-                <div class="text-[10px] text-neutral-400">Stream files without memory caps</div>
-              </div>
-              <ArrowRight class="w-3.5 h-3.5 text-neutral-400 group-hover:translate-x-1 group-hover:text-[#144e35] transition-all" />
-            </NuxtLink>
-
-            <!-- Tool 3: API Keys -->
-            <NuxtLink
-              to="/settings"
-              class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-[#144e35]/60 transition-all group"
-            >
-              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#144e35] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <KeyRound class="w-4 h-4" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-neutral-900 group-hover:text-[#144e35] transition-colors">API Keys &amp; Scopes</div>
-                <div class="text-[10px] text-neutral-400">Manage SHA-256 secure tokens</div>
-              </div>
-              <ArrowRight class="w-3.5 h-3.5 text-neutral-400 group-hover:translate-x-1 group-hover:text-[#144e35] transition-all" />
-            </NuxtLink>
-
-            <!-- Tool 4: Docs -->
-            <NuxtLink
-              to="/docs"
-              class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-[#144e35]/60 transition-all group"
-            >
-              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#144e35] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <BookOpen class="w-4 h-4" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-neutral-900 group-hover:text-[#144e35] transition-colors">Documentation</div>
-                <div class="text-[10px] text-neutral-400">Guides, APIs, and SDK examples</div>
-              </div>
-              <ArrowRight class="w-3.5 h-3.5 text-neutral-400 group-hover:translate-x-1 group-hover:text-[#144e35] transition-all" />
-            </NuxtLink>
+            </div>
           </div>
         </div>
 
-        <div class="mt-4 pt-3 border-t border-neutral-100 text-center">
-          <NuxtLink to="/monitoring" class="text-xs text-neutral-500 hover:text-neutral-900 font-semibold inline-flex items-center gap-1.5">
-            <span>Explore Telemetry Dashboard</span>
-            <ArrowRight class="w-3 h-3" />
-          </NuxtLink>
+        <!-- Time Tracker / Live Session Card (Exact Donezo Wavy Green Card) -->
+        <div class="wavy-tracker-card p-5 text-white">
+          <div class="text-xs font-medium text-white/80 mb-4">
+            Time Tracker
+          </div>
+
+          <!-- Digital Timer -->
+          <div class="text-3xl font-mono font-bold tracking-wider text-center my-4">
+            {{ timerText }}
+          </div>
+
+          <!-- Action Buttons: Pause (white) & Stop (red) -->
+          <div class="flex items-center justify-center gap-3 mt-4">
+            <button
+              class="w-10 h-10 rounded-full bg-white text-neutral-900 flex items-center justify-center shadow-md hover:bg-neutral-100 transition-transform active:scale-95"
+              @click="toggleTimer"
+            >
+              <Pause v-if="isRunningTimer" class="w-4 h-4 fill-current" />
+              <Play v-else class="w-4 h-4 fill-current" />
+            </button>
+
+            <button
+              class="w-10 h-10 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-md hover:bg-rose-600 transition-transform active:scale-95"
+              @click="resetTimer"
+            >
+              <Square class="w-4 h-4 fill-current" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -513,26 +376,24 @@
 import {
   Plus,
   Terminal,
-  FolderKanban,
   ArrowUpRight,
+  TrendingUp,
   Database,
   HardDrive,
   RefreshCw,
   Play,
-  UploadCloud,
-  Activity,
-  KeyRound,
-  ShieldCheck,
-  CheckCircle2,
-  BookOpen,
-  ArrowRight
+  Pause,
+  Square,
+  Code2,
+  Sparkles,
+  Layers,
+  Zap,
+  Globe
 } from '@lucide/vue'
-import type { Project, SystemResourceStats } from '~/types'
 
 definePageMeta({ middleware: 'auth' })
 
 const { health, checkHealth } = useSystemHealth()
-const { projects, fetchProjects } = useProjects()
 
 const summary = ref({
   totalProjects: 24,
@@ -544,28 +405,56 @@ const summary = ref({
 const isLoadingSummary = ref(false)
 const isMigrating = ref(false)
 const migrationMessage = ref<string | null>(null)
-const terminalTab = ref<'queries' | 'schema' | 'system'>('queries')
 
-const realProjects = computed<Project[]>(() => projects.value || [])
-const recentQueries = ref<any[]>([])
-const sysStats = ref<SystemResourceStats | null>(null)
+// Time Tracker State
+const timerSeconds = ref(5048) // 01:24:08
+const isRunningTimer = ref(true)
+let timerInterval: any = null
 
-const loadAllData = async () => {
-  isLoadingSummary.value = true
-  try {
-    await Promise.all([
-      loadDashboardSummary(),
-      checkHealth(),
-      fetchProjects(),
-      loadRecentQueries(),
-      loadSystemStats()
-    ])
-  } finally {
-    isLoadingSummary.value = false
+const timerText = computed(() => {
+  const h = Math.floor(timerSeconds.value / 3600).toString().padStart(2, '0')
+  const m = Math.floor((timerSeconds.value % 3600) / 60).toString().padStart(2, '0')
+  const s = (timerSeconds.value % 60).toString().padStart(2, '0')
+  return `${h}:${m}:${s}`
+})
+
+const toggleTimer = () => {
+  isRunningTimer.value = !isRunningTimer.value
+}
+
+const resetTimer = () => {
+  timerSeconds.value = 0
+  isRunningTimer.value = false
+}
+
+// Donezo Quick Project items
+const quickProjects = [
+  { name: 'Develop API Endpoints', due: 'Due date: Nov 26, 2026', icon: Code2, bg: 'linear-gradient(135deg,#3b82f6,#6366f1)' },
+  { name: 'Onboarding Flow', due: 'Due date: Nov 28, 2026', icon: Sparkles, bg: 'linear-gradient(135deg,#10b981,#059669)' },
+  { name: 'Build Dashboard', due: 'Due date: Nov 30, 2026', icon: Layers, bg: 'linear-gradient(135deg,#f59e0b,#d97706)' },
+  { name: 'Optimize Page Load', due: 'Due date: Dec 5, 2026', icon: Zap, bg: 'linear-gradient(135deg,#ec4899,#f43f5e)' },
+  { name: 'Cross-Browser Testing', due: 'Due date: Dec 6, 2026', icon: Globe, bg: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' },
+]
+
+// Donezo Team collaboration list
+const teamMembers = [
+  { name: 'Alexandra Deff', role: 'Working on Github Project Repository', initials: 'AD', status: 'completed', avatarBg: 'linear-gradient(135deg,#f87171,#ef4444)' },
+  { name: 'Edwin Adenike', role: 'Working on Integrate User Authentication', initials: 'EA', status: 'in progress', avatarBg: 'linear-gradient(135deg,#34d399,#10b981)' },
+  { name: 'Isaac Oluwatemilorun', role: 'Working on Develop Search and Filter', initials: 'IO', status: 'pending', avatarBg: 'linear-gradient(135deg,#60a5fa,#3b82f6)' },
+  { name: 'David Oshodi', role: 'Working on Responsive Layout for Homepage', initials: 'DO', status: 'in progress', avatarBg: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
+]
+
+const getStatusBadgeClass = (status: string) => {
+  switch (status) {
+    case 'completed': return 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+    case 'in progress': return 'bg-amber-50 text-amber-700 border border-amber-200'
+    case 'pending': return 'bg-rose-50 text-rose-700 border border-rose-200'
+    default: return 'bg-neutral-100 text-neutral-600'
   }
 }
 
-const loadDashboardSummary = async () => {
+const loadDashboardData = async () => {
+  isLoadingSummary.value = true
   try {
     const res = await $fetch<any>('/api/dashboard/summary')
     if (res) {
@@ -579,33 +468,8 @@ const loadDashboardSummary = async () => {
     }
   } catch (err) {
     console.error('Failed to load dashboard summary:', err)
-  }
-}
-
-const loadRecentQueries = async () => {
-  try {
-    const res = await $fetch<any>('/api/monitoring/query-history?pageSize=4')
-    if (res?.items) {
-      recentQueries.value = res.items
-    }
-  } catch {
-    // Default fallback sample queries
-    recentQueries.value = [
-      { queryType: 'SELECT', sqlQuery: 'SELECT * FROM projects WHERE status = "active";', databaseName: 'kyodb_system', executionTimeMs: 14 },
-      { queryType: 'INSERT', sqlQuery: 'INSERT INTO storage_objects (id, key) VALUES (...);', databaseName: 'kyodb_system', executionTimeMs: 28 },
-      { queryType: 'SELECT', sqlQuery: 'SELECT COUNT(*) FROM api_keys;', databaseName: 'kyodb_system', executionTimeMs: 8 }
-    ]
-  }
-}
-
-const loadSystemStats = async () => {
-  try {
-    const res = await $fetch<any>('/api/monitoring/stats')
-    if (res) {
-      sysStats.value = res.data || res
-    }
-  } catch {
-    // silent fallback
+  } finally {
+    isLoadingSummary.value = false
   }
 }
 
@@ -627,6 +491,17 @@ const handleRunMigration = async () => {
 }
 
 onMounted(() => {
-  loadAllData()
+  loadDashboardData()
+  checkHealth()
+
+  timerInterval = setInterval(() => {
+    if (isRunningTimer.value) {
+      timerSeconds.value++
+    }
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (timerInterval) clearInterval(timerInterval)
 })
 </script>
