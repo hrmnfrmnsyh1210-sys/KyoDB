@@ -103,8 +103,8 @@ export async function bootstrapAdmin(params: {
   if (pool) {
     try {
       await pool.execute(
-        `INSERT INTO admin_users (id, username, email, password_hash, is_active, created_at, updated_at)
-         VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
+        `INSERT INTO admin_users (id, username, email, password_hash, role, is_active, created_at, updated_at)
+         VALUES (?, ?, ?, ?, 'admin', 1, NOW(), NOW())`,
         [id, params.username, params.email, passwordHash]
       )
     } catch (err: any) {
@@ -192,9 +192,9 @@ export async function registerUser(params: {
   if (pool) {
     try {
       await pool.execute(
-        `INSERT INTO admin_users (id, username, email, password_hash, is_active, created_at, updated_at)
-         VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
-        [id, cleanUsername, cleanEmail, passwordHash]
+        `INSERT INTO admin_users (id, username, email, password_hash, role, is_active, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, 1, NOW(), NOW())`,
+        [id, cleanUsername, cleanEmail, passwordHash, newUser.role]
       )
     } catch (err: any) {
       console.warn('[RegisterUser] Insert into TiDB failed, saving in-memory:', err.message)
@@ -300,7 +300,8 @@ export async function authenticateAdmin(
           id: row.id,
           username: row.username,
           email: row.email,
-          role: row.role || 'user',
+          // Legacy rows pre-role column default to 'admin' (bootstrapped admin accounts)
+          role: row.role ?? 'admin',
           isActive: Boolean(row.is_active),
           createdAt: new Date(row.created_at).toISOString(),
           updatedAt: new Date(row.updated_at).toISOString()
@@ -427,7 +428,8 @@ export async function validateSessionToken(rawToken: string): Promise<AdminUser 
           id: row.id,
           username: row.username,
           email: row.email,
-          role: row.role || 'user',
+          // Legacy rows pre-role column default to 'admin' (bootstrapped admin accounts)
+          role: row.role ?? 'admin',
           isActive: Boolean(row.is_active),
           createdAt: new Date(row.created_at).toISOString(),
           updatedAt: new Date(row.updated_at).toISOString()
@@ -468,7 +470,8 @@ export async function getUserById(userId: string): Promise<AdminUser | null> {
           id: row.id,
           username: row.username,
           email: row.email,
-          role: row.role || 'user',
+          // Legacy rows pre-role column default to 'admin' (bootstrapped admin accounts)
+          role: row.role ?? 'admin',
           isActive: Boolean(row.is_active),
           createdAt: new Date(row.created_at).toISOString(),
           updatedAt: new Date(row.updated_at).toISOString()
